@@ -1,0 +1,11 @@
+{
+  "name": "ResearchShare-Contracts",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Ersikan <julien.philippon@epitech.eu>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "truffle": "^5.3.3"
+  }
+}

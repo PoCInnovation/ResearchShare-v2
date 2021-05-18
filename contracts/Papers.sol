@@ -25,6 +25,11 @@ contract Papers {
         return _paper.paperState;
     }
 
+    function getPaper(string memory _ipfsHash) public view returns (string[] memory, PaperState) {
+        Paper memory _paper = papers[_ipfsHash];
+        return (_paper.fields, _paper.paperState);
+    }
+
     function getFields(string memory _ipfsHash) public view returns (string[] memory) {
         Paper memory _paper = papers[_ipfsHash];
         return _paper.fields;
@@ -32,8 +37,8 @@ contract Papers {
 
     // only reviewer
     function updatePaperState(string memory _ipfsHash, PaperState _newState) public {
-        Paper memory _paper = papers[_ipfsHash];
-        require (_paper.paperState > PaperState.onReview);
+        Paper storage _paper = papers[_ipfsHash];
+        require (_paper.paperState == PaperState.onReview);
         _paper.paperState = _newState;
         emit NewPaperState(_ipfsHash, _newState);
     }
@@ -48,7 +53,7 @@ contract Papers {
 
     // only reviewer
     function addFeedBack(string memory _ipfsHash, string memory _feedBack) public {
-        Paper memory _paper = papers[_ipfsHash];
+        Paper storage _paper = papers[_ipfsHash];
 
         uint i = _paper.feedBacks.length - 1;
         if (i == 0 && keccak256(abi.encodePacked(_paper.feedBacks[0].feedBack))

@@ -7,7 +7,8 @@
   "scripts": {
     "ganache": "ganache-cli --deterministic",
     "migrate": "truffle migrate",
-    "test": "truffle compile && mocha --exit --recursive"
+    "test": "truffle compile && mocha --exit --recursive",
+    "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org"
   },
   "dependencies": {},
   "devDependencies": {

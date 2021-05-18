@@ -48,7 +48,12 @@ contract Papers {
 
     // only owner
     function addPaper(string memory _ipfsHash, string[] memory _fields, address[] memory _reviewers, uint _maxReviewTime) public {
-        papers[_ipfsHash] = Paper(_fields, PaperState.onReview, msg.sender, _reviewers, new FeedBack[](0), block.timestamp, block.timestamp + _maxReviewTime);
+        Paper storage _paper = papers[_ipfsHash];
+        _paper.fields = _fields;
+        _paper.owner = msg.sender;
+        _paper.reviewers = _reviewers;
+        _paper.submitDate = block.timestamp;
+        _paper.deadlineDate = block.timestamp + _maxReviewTime;
     }
 
     // only reviewer

@@ -4,16 +4,19 @@ contract Papers {
     enum PaperState {onReview, Approved, Rejected}
 
     struct FeedBack {
-        string feedBack;
-        // address Reviewer;
-
+        string feedback;
+        address reviewer;
+        PaperState reviewState;
     }
 
     struct Paper {
-        FeedBack[] feedBacks;
         string[] fields;
         PaperState paperState;
-        // address Owner;
+        address owner;
+        address[] reviewers;
+        FeedBack[] feedbacks;
+        uint submitDate;
+        uint deadlineDate;
     }
 
     mapping (string => Paper) public papers;
@@ -36,32 +39,41 @@ contract Papers {
     }
 
     // only reviewer
-    function updatePaperState(string memory _ipfsHash, PaperState _newState) public {
+    function updatePaperState(string memory _ipfsHash, PaperState _newState) private {
         Paper storage _paper = papers[_ipfsHash];
-        require (_paper.paperState == PaperState.onReview);
+        require (_paper.paperState == PaperState.onReview && block.timestamp <= _paper.deadlineDate);
         _paper.paperState = _newState;
         emit NewPaperState(_ipfsHash, _newState);
     }
 
     // only owner
-    function addPaper(string memory _ipfsHash, string[] memory _fields) public {
-        Paper storage _paper = papers[_ipfsHash];
-
-        _paper.fields = _fields;
-        _paper.paperState = PaperState.onReview;
+    function addPaper(string memory _ipfsHash, string[] memory _fields, address[] memory _reviewers, uint _maxReviewTime) public {
+        papers[_ipfsHash] = Paper(_fields, PaperState.onReview, msg.sender, _reviewers, new FeedBack[](0), block.timestamp, block.timestamp + _maxReviewTime);
     }
 
     // only reviewer
-    function addFeedBack(string memory _ipfsHash, string memory _feedBack) public {
+    function addFeedBack(string memory _ipfsHash, string memory _feedBack, PaperState _reviewState) public {
         Paper storage _paper = papers[_ipfsHash];
+        PaperState reviewState = _reviewState;
+        require(block.timestamp <= _paper.deadlineDate);
+        address _reviewer = msg.sender;
+        _paper.feedbacks.push(FeedBack(_feedBack, _reviewer, reviewState));
 
-        uint i = _paper.feedBacks.length - 1;
-        if (i == 0 && keccak256(abi.encodePacked(_paper.feedBacks[0].feedBack))
-        == keccak256(abi.encodePacked(""))) {
-        // We did this because when we initialize the version, the feedback string is empty.
-            _paper.feedBacks[0].feedBack = _feedBack;
-        } else {
-            _paper.feedBacks[i].feedBack = _feedBack;
+        FeedBack[] memory _feedbacks = _paper.feedbacks;
+        address[] memory _reviewers = _paper.reviewers;
+        uint16 approvements = 0;
+        for (uint j = 0; j < _reviewers.length; j++) {
+            bool haveApproved = false;
+            for (uint i = _feedbacks.length - 1; i >= 0; i--)
+                if (_feedbacks[i].reviewer == _reviewers[j]) {
+                    if (_feedbacks[i].reviewState == PaperState.Approved)
+                        haveApproved = true;
+                    break;
+                }
+            if (haveApproved == true)
+                approvements += 1;
         }
+        if (approvements == _reviewers.length)
+            updatePaperState(_ipfsHash, PaperState.Approved);
     }
 }

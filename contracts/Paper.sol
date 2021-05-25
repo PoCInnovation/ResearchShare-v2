@@ -41,7 +41,6 @@ contract Paper {
             }
             if (reviewers[i] == _reviewer) {
                 index = i;
-                break;
             }
         }
         return (index, approved, rejected);

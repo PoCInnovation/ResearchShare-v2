@@ -1,84 +1,55 @@
 pragma solidity ^0.8.4;
 
+import "./Paper.sol";
+
 contract Papers {
-    enum PaperState {onReview, Approved, Rejected}
+    mapping (string => address) public papers;
+    event NewPaperState(string indexed _ipfsHash, Paper.State indexed _newState);
 
-    struct FeedBack {
-        string feedback;
-        address reviewer;
-        PaperState reviewState;
+    function getPaperContract(string memory _ipfsHash) public view returns (address) {
+        return papers[_ipfsHash];
     }
 
-    struct Paper {
-        string[] fields;
-        PaperState paperState;
-        address owner;
-        address[] reviewers;
-        FeedBack[] feedbacks;
-        uint submitDate;
-        uint deadlineDate;
+    function getPaper(string memory _ipfsHash) public view returns (string[] memory, Paper.State) { 
+        Paper _paper = Paper(papers[_ipfsHash]);
+        string[] memory _fields;
+        Paper.State _paperState;
+        (,_fields , _paperState,,,,,,) = _paper.getPaper();
+        return (_fields, _paperState);
     }
 
-    mapping (string => Paper) public papers;
-    event NewPaperState(string indexed _ipfsHash, PaperState indexed _newState);
-
-
-    function getPaperState(string memory _ipfsHash) public view returns (PaperState) {
-        Paper memory _paper = papers[_ipfsHash];
-        return _paper.paperState;
-    }
-
-    function getPaper(string memory _ipfsHash) public view returns (string[] memory, PaperState) {
-        Paper memory _paper = papers[_ipfsHash];
-        return (_paper.fields, _paper.paperState);
+    function getPaperState(string memory _ipfsHash) public view returns (Paper.State) {
+        Paper _paper = Paper(papers[_ipfsHash]);
+        Paper.State _paperState;
+        (,, _paperState,,,,,,) = _paper.getPaper();
+        return (_paperState);
     }
 
     function getFields(string memory _ipfsHash) public view returns (string[] memory) {
-        Paper memory _paper = papers[_ipfsHash];
-        return _paper.fields;
-    }
-
-    // only reviewer
-    function updatePaperState(string memory _ipfsHash, PaperState _newState) private {
-        Paper storage _paper = papers[_ipfsHash];
-        require (_paper.paperState == PaperState.onReview && block.timestamp <= _paper.deadlineDate);
-        _paper.paperState = _newState;
-        emit NewPaperState(_ipfsHash, _newState);
+        Paper _paper = Paper(papers[_ipfsHash]);
+        string[] memory _fields;
+        (,_fields ,,,,,,,) = _paper.getPaper();
+        return (_fields);
     }
 
     // only owner
-    function addPaper(string memory _ipfsHash, string[] memory _fields, address[] memory _reviewers, uint _maxReviewTime) public {
-        Paper storage _paper = papers[_ipfsHash];
-        _paper.fields = _fields;
-        _paper.owner = msg.sender;
-        _paper.reviewers = _reviewers;
-        _paper.submitDate = block.timestamp;
-        _paper.deadlineDate = block.timestamp + _maxReviewTime;
+    function addPaper(string memory _ipfsHash, address _paper) public {
+        papers[_ipfsHash] = _paper;
     }
 
     // only reviewer
-    function addFeedBack(string memory _ipfsHash, string memory _feedBack, PaperState _reviewState) public {
-        Paper storage _paper = papers[_ipfsHash];
-        PaperState reviewState = _reviewState;
-        require(block.timestamp <= _paper.deadlineDate);
-        address _reviewer = msg.sender;
-        _paper.feedbacks.push(FeedBack(_feedBack, _reviewer, reviewState));
+    function addReviewState(string memory _ipfsHash, Paper.State _state) public {
+        Paper _paper = Paper(papers[_ipfsHash]);
+        Paper.State _beforeState = getPaperState(_ipfsHash);
+        _paper.addReviewState(_state);
+        Paper.State _afterState = getPaperState(_ipfsHash);
+        if (_beforeState != _afterState)
+            emit NewPaperState(_ipfsHash, _afterState);
+    }
 
-        FeedBack[] memory _feedbacks = _paper.feedbacks;
-        address[] memory _reviewers = _paper.reviewers;
-        uint16 approvements = 0;
-        for (uint j = 0; j < _reviewers.length; j++) {
-            bool haveApproved = false;
-            for (uint i = _feedbacks.length - 1; i >= 0; i--)
-                if (_feedbacks[i].reviewer == _reviewers[j]) {
-                    if (_feedbacks[i].reviewState == PaperState.Approved)
-                        haveApproved = true;
-                    break;
-                }
-            if (haveApproved == true)
-                approvements += 1;
-        }
-        if (approvements == _reviewers.length)
-            updatePaperState(_ipfsHash, PaperState.Approved);
+    // only reviewer
+    function addFeedBack(string memory _ipfsHash, string memory _feedback) public {
+        Paper _paper = Paper(papers[_ipfsHash]);
+        _paper.addFeedback(_feedback);
     }
 }

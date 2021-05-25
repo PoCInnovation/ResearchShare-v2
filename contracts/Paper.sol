@@ -13,7 +13,7 @@ contract Paper {
     State public paperState;
     address private owner;
     address[] private reviewers;
-    State[] reviewStates;
+    State[] private reviewStates;
     FeedBack[] private feedbacks;
     uint private submitDate;
     uint private deadlineDate;
@@ -52,21 +52,7 @@ contract Paper {
         require(block.timestamp <= deadlineDate, "The deadline date has passed.");
         _;
     }
-
-    function getPaper() external view returns (
-        string memory,
-        string[] memory,
-        State,
-        address,
-        address[] memory,
-        State[] memory,
-        FeedBack[] memory,
-        uint,
-        uint
-    ) {
-        return (ipfsHash, fields, paperState, owner, reviewers, reviewStates, feedbacks, submitDate, deadlineDate);
-    }
-
+    
     function addFeedback(string memory _feedback) public canBeReview() {
         feedbacks.push(FeedBack(_feedback, msg.sender));
     }

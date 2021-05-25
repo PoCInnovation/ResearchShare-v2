@@ -28,7 +28,7 @@ contract Paper {
         deadlineDate = block.timestamp + _maxReviewTime;
     }
 
-    function _getReviewerIndex(address _reviewer) view private returns (uint, uint, uint) {
+    function _getPaperData(address _reviewer) view private returns (uint, uint, uint) {
         uint index = reviewers.length;
         uint approved;
         uint rejected;
@@ -62,7 +62,7 @@ contract Paper {
         uint index;
         uint approved;
         uint rejected;
-        (index, approved, rejected) = _getReviewerIndex(msg.sender);
+        (index, approved, rejected) = _getPaperData(msg.sender);
         require(index != reviewers.length, "You are not allowed to review this paper.");
         reviewStates[index] = _state;
         if (_state == State.Approved)

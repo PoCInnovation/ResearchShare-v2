@@ -2,7 +2,7 @@ pragma solidity ^0.8.4;
 
 import "./Paper.sol";
 
-contract Papers {
+contract PaperManager {
     mapping (string => Paper) public papers;
     event NewPaperState(string indexed _ipfsHash, Paper.State indexed _newState);
 

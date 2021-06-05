@@ -1,9 +1,9 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./PermissionManager.sol";
+import "./PermissionInterface.sol";
 
-contract OwnedPermissionManager is PermissionManager, Ownable {
+contract OwnedPermissionManager is PermissionInterface, Ownable {
     
     mapping(address => bool) publishers;
     mapping(address => bool) reviewers;

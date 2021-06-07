@@ -1,11 +1,11 @@
-const { expect } = require("chai");
-const { accounts, contract } = require("@openzeppelin/test-environment");
-const {
-  BN, // Big Number support
-  constants, // Common constants, like the zero address and largest integers
-  expectEvent, // Assertions for emitted events
-  expectRevert, // Assertions for transactions that should fail
-} = require("@openzeppelin/test-helpers");
+import { expect } from "chai";
+import { accounts, contract } from "@openzeppelin/test-environment";
+// import {
+//   BN, // Big Number support
+//   constants, // Common constants, like the zero address and largest integers
+//   expectEvent, // Assertions for emitted events
+//   expectRevert, // Assertions for transactions that should fail
+// } from "@openzeppelin/test-helpers";
 
 const RSAuth = contract.fromArtifact("RSAuth");
 const researchCenterRole = "RESEARCH_CENTER_ROLE";
@@ -18,14 +18,14 @@ describe("RSAuth", function () {
   beforeEach(async function () {
     this.contract = await RSAuth.new({ from: univ1 });
 
-    this.hasRole = async function (role, address) {
+    this.hasRole = async function (role: string, address: string) {
       return await this.contract.hasRole(await this.contract[role](), address);
     };
 
-    this.isCenter = (address) => this.hasRole(researchCenterRole, address);
-    this.isResearcher = (address) => this.hasRole(researcherRole, address);
+    this.isCenter = (address: string) => this.hasRole(researchCenterRole, address);
+    this.isResearcher = (address: string) => this.hasRole(researcherRole, address);
 
-    this.grantRole = async function (role, address, config) {
+    this.grantRole = async function (role: string, address: string, config: any) {
       return await this.contract.grantRole(
         await this.contract[role](),
         address,

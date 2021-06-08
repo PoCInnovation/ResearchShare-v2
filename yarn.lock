@@ -14242,3 +14242,8 @@ zen-observable@^0.8.0, zen-observable@^0.8.14:
   version "0.8.15"
   resolved "https://registry.yarnpkg.com/zen-observable/-/zen-observable-0.8.15.tgz#96415c512d8e3ffd920afd3889604e30b9eaac15"
   integrity sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==
+
+zokrates-js@^1.0.32:
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/zokrates-js/-/zokrates-js-1.0.32.tgz#cf58e664d7c8d66d4fe1592d4a788f90359d4612"
+  integrity sha512-zHVCYE9u4nxb0QhqNbxF7QWeFnlNxZ/b+qcZBWDjlByl89s9sQG9x0ToPQuak8KgLyfLv/x8P6PwI6Sm+DtQhw==

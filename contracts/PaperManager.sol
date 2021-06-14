@@ -10,12 +10,10 @@ contract PaperManager {
         return papers[_ipfsHash];
     }
 
-    // only owner
     function addPaper(string memory _ipfsHash, address _paper) public {
         papers[_ipfsHash] = Paper(_paper);
     }
 
-    // only reviewer
     function addReviewState(string memory _ipfsHash, Paper.State _state) public {
         Paper _paper = papers[_ipfsHash];
         Paper.State _beforeState = _paper.paperState();
@@ -25,7 +23,6 @@ contract PaperManager {
             emit NewPaperState(_ipfsHash, _afterState);
     }
 
-    // only reviewer
     function addFeedBack(string memory _ipfsHash, string memory _feedback) public {
         papers[_ipfsHash].addFeedback(_feedback);
     }

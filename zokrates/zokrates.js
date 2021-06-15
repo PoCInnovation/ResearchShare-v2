@@ -8,7 +8,7 @@ initialize().then((zokratesProvider) => {
     const artifacts = zokratesProvider.compile(source);
 
     // computation
-    const { witness, output } = zokratesProvider.computeWitness(artifacts, ["2"]);
+    const { witness, output } = zokratesProvider.computeWitness(artifacts, ["4"]);
 
     // run setup
     const keypair = zokratesProvider.setup(artifacts.program);

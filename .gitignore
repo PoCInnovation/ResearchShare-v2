@@ -2,3 +2,6 @@ node_modules
 build
 *.log
 contracts/artifacts
+/zokrates/example/*/*
+!/zokrates/example/reveal_bit.zok
+!/zokrates/example/*/setup.sh

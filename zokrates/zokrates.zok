@@ -3,35 +3,42 @@ import "hashes/sha256/IVconstants" as IVconstants
 import "utils/casts/u8_to_bits" as u8_to_bits
 import "utils/casts/bool_256_to_u32_8" as bool_256_to_u32_8
 
+def packargs(bool[256] bigCompactValues, bool[8][32] compactValues, u32[8] hash) -> (bool[256], bool[8][32], u32[8]):
+    return bigCompactValues, compactValues, hash
+
+def fillbigcompactvalues(bool[256] bigCompactValues, bool[8][32] compactValues, u32[8] hash, u32 i) -> (bool[256], bool[8][32], u32[8]):
+    bigCompactValues = [...compactValues[0], ...compactValues[1], ...compactValues[2], ...compactValues[3], ...compactValues[4], ...compactValues[5], ...compactValues[6], ...compactValues[7]]
+    u32[8] tohash = bool_256_to_u32_8(bigCompactValues)
+    hash = sha256(hash, tohash)
+    return bigCompactValues, compactValues, hash
+
+def fillcompactvalues(bool[256] bigCompactValues, bool[8][32] compactValues, bool[4][8] values, u32[8] hash, u32 i) -> (bool[256], bool[8][32], u32[8]):
+    compactValues[(i + 1) / 4 - 1] = [...values[0], ...values[1], ...values[2], ...values[3]]
+    return if ((i + 1) / 4 - 1) % 8 == 7 then fillbigcompactvalues(bigCompactValues, compactValues, hash, i) else packargs(bigCompactValues, compactValues, hash) fi
+
+def filllastvalues(bool[256] bigCompactValues, bool[8][32] compactValues, bool[4][8] values, u32[8] hash, u32 len) -> u32[8]:
+    for u32 i in (len % 4)..4 do
+        values[i] = [false; 8]
+    endfor
+    compactValues[(len + 1) / 4] = [...values[0], ...values[1], ...values[2], ...values[3]]
+    for u32 i in ((len + 1) / 4 + 1)..8 do
+        compactValues[i] = [false; 32]
+    endfor
+    bigCompactValues = [...compactValues[0], ...compactValues[1], ...compactValues[2], ...compactValues[3], ...compactValues[4], ...compactValues[5], ...compactValues[6], ...compactValues[7]]
+    u32[8] tohash = bool_256_to_u32_8(bigCompactValues)
+    hash = sha256(hash, tohash)
+    return hash
+
 def sha256string<S>(private u8[S] str) -> u32[8]:
     u32[8] hash = IVconstants()
-    u32[8] tohash = [0; 8]
     bool[256] bigCompactValues = [false; 256]
     bool[8][32] compactValues = [[false; 32]; 8]
     bool[4][8] values = [[false; 8]; 4]
     for u32 i in 0..S0 do
         values[i % 4] = u8_to_bits(str[i])
-        if i % 4 == 3 then
-            compactValues[(i + 1) / 4 - 1] = [...values[0], ...values[1], ...values[2], ...values[3]]
-            if ((i + 1) / 4 - 1) % 8 == 7 then
-                bigCompactValues = [...compactValues[0], ...compactValues[1], ...compactValues[2], ...compactValues[3], ...compactValues[4], ...compactValues[5], ...compactValues[6], ...compactValues[7]]
-                tohash = bool_256_to_u32_8(bigCompactValues)
-                hash = sha256(hash, tohash)
-            fi
-        fi
+        bigCompactValues, compactValues, hash = if i % 4 == 3 then fillcompactvalues(bigCompactValues, compactValues, values, hash, i) else packargs(bigCompactValues, compactValues, hash) fi
     endfor
-    if (S0 - 1) % 4 != 3 then
-        for u32 i in (S0 % 4)..4 do
-            values[i] = [false; 8]
-        endfor
-        compactValues[(S0 + 1) / 4] = [...values[0], ...values[1], ...values[2], ...values[3]]
-        for u32 i in ((S0 + 1) / 4 + 1)..8 do
-            compactValues[i] = [false; 32]
-        endfor
-        bigCompactValues = [...compactValues[0], ...compactValues[1], ...compactValues[2], ...compactValues[3], ...compactValues[4], ...compactValues[5], ...compactValues[6], ...compactValues[7]]
-        tohash = bool_256_to_u32_8(bigCompactValues)
-        hash = sha256(hash, tohash)
-    fi
+    hash = if (S - 1) % 4 != 3 then filllastvalues(bigCompactValues, compactValues, values, hash, len) else hash fi
     return hash
 
 def main(private u8[256] str0, private u8[256] str1, private u8[256] str2, private u8[256] str3, private u8[256] str4) -> u32[8]:

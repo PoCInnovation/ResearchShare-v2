@@ -5,7 +5,8 @@ initialize().then((zokratesProvider) => {
     const source = fs.readFileSync("zokrates/zokrates.zok").toString();
 
     // compilation
-    const artifacts = zokratesProvider.compile(source);
+    const artifacts = zokratesProvider.compile(source).catch(err => console.error(err));
+    return;
 
     // computation
     const { witness, output } = zokratesProvider.computeWitness(artifacts, ["4"]);
@@ -19,7 +20,7 @@ initialize().then((zokratesProvider) => {
     // fs.writeFileSync("zokrates/zokrates.json", proof);
     
     // export solidity verifier
-    const verifier = zokratesProvider.exportSolidityVerifier(keypair.vk, "v1");
+    const verifier = zokratesProvider.exportSolidityVerifier(keypair.vk, "v2");
 
     fs.writeFileSync("zokrates/zokrates.sol", verifier);
 });

@@ -3,6 +3,7 @@
 ## Table of content
 
 * [Introduction](https://www.github.com/PoCInnovation/ResearchShare-v2#Introduction)
+* [Installation](https://www.github.com/PoCInnovation/ResearchShare-v2#Installation)
 * [Stack](https://www.github.com/PoCInnovation/ResearchShare-v2#Stack)
 * [Userflow](https://www.github.com/PoCInnovation/ResearchShare-v2#Userflow)
 * [Contributors](https://www.github.com/PoCInnovation/ResearchShare-v2#Contributors)
@@ -14,6 +15,9 @@ editing process. Click [here](https://github.com/PoCInnovation/ResearchShare/blo
 
 This project has the "v2" extension because it is the second iteration. You can find
 the first version [here](https://github.com/PoCInnovation/ResearchShare)
+
+## Installation
+
 
 ## Stack
 

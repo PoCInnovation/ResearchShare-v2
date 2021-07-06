@@ -1,4 +1,4 @@
-### Research Share
+# Research Share
 
 ## Table of content
 
@@ -32,6 +32,6 @@ Zero Knowledge Proof.
 * [Matthis Cusin](https://github.com/Basilarc)
 * [Quentin Veyrenc](https://github.com/VrncQuentin)
 
-# Project Leader
+### Project Leader
 
 [Luca Georges François](https://github.com/PtitLuca)

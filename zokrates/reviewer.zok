@@ -1,11 +1,11 @@
 import "hashes/sha256/IVconstants" as IVconstants
 import "hashes/sha256/512bit" as sha256
 
-def main(public u32[8][8] reviewers_hash, private u32[5][8] hashes) -> bool:
+def main(public u32[8][8] reviewers_hash, private u32[5][8] input_hashes) -> bool:
     u32[8] reviewer_hash = IVconstants()
     bool ret = false
     for u32 i in 0..5 do
-        reviewer_hash = sha256(reviewer_hash, hashes[i])
+        reviewer_hash = sha256(reviewer_hash, input_hashes[i])
     endfor
     for u32 i in 0..8 do
         ret = true if reviewers_hash[i] == reviewer_hash else ret

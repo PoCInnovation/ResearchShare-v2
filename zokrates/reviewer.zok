@@ -8,6 +8,6 @@ def main(public u32[8][8] reviewers_hash, private u32[5][8] input_hashes) -> boo
         reviewer_hash = sha256(reviewer_hash, input_hashes[i])
     endfor
     for u32 i in 0..8 do
-        ret = true if reviewers_hash[i] == reviewer_hash else ret
+        ret = if reviewers_hash[i] == reviewer_hash then true else ret fi
     endfor
     return ret

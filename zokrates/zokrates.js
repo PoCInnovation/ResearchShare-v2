@@ -2,7 +2,7 @@ const { initialize } = require('zokrates-js/node');
 const fs = require('fs');
 
 initialize().then((zokratesProvider) => {
-    const source = fs.readFileSync("zokrates/zokrates.zok").toString();
+    const source = fs.readFileSync("zokrates/reviewer.zok").toString();
 
     // compilation
     const artifacts = zokratesProvider.compile(source).catch(err => console.error(err));

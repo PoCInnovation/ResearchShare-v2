@@ -5,7 +5,9 @@ initialize().then((zokratesProvider) => {
     const source = fs.readFileSync("zokrates/reviewer.zok").toString();
 
     // compilation
-    const artifacts = zokratesProvider.compile(source).catch(err => console.error(err));
+    const artifacts = zokratesProvider.compile(source);
+
+    console.log(artifacts)
     return;
 
     // computation

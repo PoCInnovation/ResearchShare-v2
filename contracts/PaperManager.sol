@@ -26,4 +26,10 @@ contract PaperManager {
     function addFeedBack(string memory _ipfsHash, string memory _feedback) public {
         papers[_ipfsHash].addFeedback(_feedback);
     }
+
+    function primaryPaperChecking(bool _checks, string memory _ipfsHash) public {
+        if (_checks) {
+            papers[_ipfsHash].primaryChecking();
+        }
+    }
 }

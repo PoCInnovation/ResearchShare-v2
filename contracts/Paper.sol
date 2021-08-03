@@ -4,7 +4,7 @@ import "./OwnedPermissionManager.sol";
 
 contract Paper is OwnedPermissionManager {
 
-    enum State {Pending, Approved, Rejected};
+    enum State {Pending, RequestChanges, Approved, Rejected};
 
     struct FeedBack {
         string feedback;
@@ -44,7 +44,7 @@ contract Paper is OwnedPermissionManager {
     }
 
     modifier isFinishState() {
-        require(paperState != State.Pending);
+        require(paperState != State.Pending && paperState != State.RequestChanges);
         _;
     }
 

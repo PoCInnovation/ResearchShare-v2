@@ -13,8 +13,8 @@ contract Paper is OwnedPermissionManager {
     }
 
     bool private primaryChecked;
-    string public ipfsHash;
-    string[] public fields;
+    string private ipfsHash;
+    string[] private fields;
     State public paperState;
     address private author;
     State[] private reviewStates;
@@ -53,7 +53,7 @@ contract Paper is OwnedPermissionManager {
     }
 
     modifier isState(State _state) {
-        require(block.timestamp <= deadlineDate, "The deadline date has passed.");
+        
         require(paperState == State.Pending);
         require(primaryChecked == true);
         _;

@@ -15,7 +15,7 @@ contract Journal is Ownable {
     function addPaper(string memory _ipfsHash, address _paper) public {
         allPapers[_ipfsHash] = Paper(_paper);
         allPapers[_ipfsHash].transferOwnership(owner);
-        allPapers[_ipfsHash].addPublisher(msg.sender);
+        allPapers[_ipfsHash].addPublisher(owner);
     }
 
     function addReviewState(string memory _ipfsHash, Paper.State _state) public {

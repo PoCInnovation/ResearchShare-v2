@@ -2,8 +2,7 @@
   text-align: center;
 }
 
-.Center {
-  margin: 0;
+.AppCenter {
   position: absolute;
   top: 50%;
   left: 50%;

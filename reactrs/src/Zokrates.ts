@@ -2,6 +2,13 @@ import { initialize, ZoKratesProvider, CompilationArtifacts, ComputationResult, 
 
 export const zokrates = initialize();
 
+declare global {
+    interface Window { progress: number; statusMessage: string }
+}
+
+window.progress = 0;
+window.statusMessage = "Initialization...";
+
 export async function zokratesCompile(zokrates: ZoKratesProvider): Promise<CompilationArtifacts> {
     const request = await fetch("reviewer.zok");
     if (request.ok === false)
@@ -61,21 +68,34 @@ export function zokratesVerifier(zokrates: ZoKratesProvider, keypair: SetupKeypa
 
 zokrates.then(async zokratesProvider => {
     console.log("Compiling...");
+    window.statusMessage = "Compiling...";
     const artifacts = await zokratesCompile(zokratesProvider);
+    window.progress = 20;
     console.log("Done!");
     console.log("Computing...")
+    window.statusMessage = "Computing...";
     const result = await zokratesCompute(zokratesProvider, artifacts,
         Array(32).fill("61be55a8e2f6b4e172338bddf184d6dbee29c98853e0a0485ecee7f27b9af0b4"),
         Array(4).fill("ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb"));
+    window.progress = 40;
     console.log("Done!");
     console.log("Generating keypair...");
+    window.statusMessage = "Generating keypair...";
     const keypair = zokratesKeypair(zokratesProvider, artifacts);
+    window.progress = 60;
     console.log("Done!");
-    console.log("Generating proof");
+    console.log("Generating proof...");
+    window.statusMessage = "Generating proof...";
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const proof = zokratesProof(zokratesProvider, artifacts, result, keypair);
+    window.progress = 80;
     console.log("Done!");
-    console.log("Generating verifier");
+    console.log("Generating verifier...");
+    window.statusMessage = "Generating verifier...";
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const verifier = zokratesVerifier(zokratesProvider, keypair);
+    window.progress = 100;
+    window.statusMessage = "Done!";
     console.log("Done!");
     console.log(result);
 });

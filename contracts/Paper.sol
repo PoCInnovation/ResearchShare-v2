@@ -12,11 +12,12 @@ contract Paper is OwnedPermissionManager {
         State state;
     }
 
+    address private author;
     bool private primaryChecked;
+    bool private isPublished;
     string private ipfsHash;
     string[] private fields;
     State public paperState;
-    address private author;
     State[] private reviewStates;
     FeedBack[] public feedbacks;
     uint private submitDate;
@@ -25,10 +26,11 @@ contract Paper is OwnedPermissionManager {
     event FeedbackDeleted(string indexed _rejectedFeedback);
 
     constructor(string memory _ipfsHash, string[] memory _fields, address _author, uint _maxReviewTime) {
+        author = _author;
         primaryChecked = false;
+        isPublished = false;
         ipfsHash = _ipfsHash;
         fields = _fields;
-        author = _author;
         reviewStates = new State[](_reviewers.length);
         submitDate = block.timestamp;
         deadlineDate = block.timestamp + _maxReviewTime;
@@ -56,6 +58,11 @@ contract Paper is OwnedPermissionManager {
         
         require(paperState == State.Pending);
         require(primaryChecked == true);
+        _;
+    }
+
+    modifier onlyAuthor() {
+        require (msg.sender == author);
         _;
     }
 
@@ -98,6 +105,10 @@ contract Paper is OwnedPermissionManager {
             approved += 1;
         else if (_state == State.Rejected)
             rejected += 1;
+    }
+
+    function claimAuthority(address _realIdentity) public onlyAuthor() {
+        author = _realIdentity;
     }
 
 }

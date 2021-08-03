@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import * as zokrates from './Zokrates';
+import './Zokrates';
 
 function App() {
   return (

@@ -14,7 +14,6 @@ contract Paper is OwnedPermissionManager {
 
     address private author;
     bool private primaryChecked;
-    bool private isPublished;
     string private ipfsHash;
     string[] private fields;
     State public paperState;

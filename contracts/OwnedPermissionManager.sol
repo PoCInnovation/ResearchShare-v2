@@ -8,14 +8,6 @@ contract OwnedPermissionManager is PermissionInterface, Ownable {
     mapping(address => bool) publishers;
     mapping(address => bool) reviewers;
 
-    address private author;
-
-    modifier onlyAuthor() {
-        require (msg.sender == author);
-        _;
-    }
-    
-    
     function canPublish(address _address) public view override returns (bool)
     {
         return publishers[_address];

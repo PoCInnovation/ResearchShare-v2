@@ -54,10 +54,16 @@ contract Paper is OwnedPermissionManager {
         return (index, approved, rejected);
     }
 
-    modifier isState(State _state) {
+    modifier isPendingState() {
         
         require(paperState == State.Pending);
         require(primaryChecked == true);
+        require(block.timestamp <= deadlineDate, "The deadline date has passed.");
+        _;
+    }
+
+    modifier isFinishState() {
+        require(paperState != State.Pending);
         _;
     }
 
@@ -70,13 +76,13 @@ contract Paper is OwnedPermissionManager {
         primaryChecked = true;
     }
     
-    function addFeedback(string memory _feedback) public  isState(paperState) {
+    function addFeedback(string memory _feedback) public  isPendingState() {
         require(canReview(msg.sender));
     
         pendingFeedbacks.push(FeedBack(_feedback, msg.sender, State.Pending));
     }
 
-    function validateFeedback(uint _indexValidFeedback) public  isState(paperState) onlyOwner() {
+    function validateFeedback(uint _indexValidFeedback) public  isPendingState() onlyOwner() {
         if (_indexValidFeedback >= 0 || _indexValidFeedback < feedbacks.length) {
             feedbacks[_indexValidFeedback].state = State.Approved;
         }
@@ -84,7 +90,7 @@ contract Paper is OwnedPermissionManager {
     }
 
 
-    function deleteFeedback(uint _indexRejectedFeedback) public  isState(paperState) onlyOwner() {
+    function deleteFeedback(uint _indexRejectedFeedback) public  isPendingState() onlyOwner() {
         if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
             emit FeedbackDeleted(feedbacks[_indexRejectedFeedback].feedback);
             delete feedbacks[_indexRejectedFeedback];
@@ -92,7 +98,7 @@ contract Paper is OwnedPermissionManager {
         revert("No such feedback !");
     }
 
-    function addReviewState(State _state) public isState(paperState) {
+    function addReviewState(State _state) public isPendingState() {
         require(canReview(msg.sender));
 
         uint index;
@@ -107,7 +113,7 @@ contract Paper is OwnedPermissionManager {
             rejected += 1;
     }
 
-    function claimAuthority(address _realIdentity) public onlyAuthor() {
+    function claimAuthority(address _realIdentity) public onlyAuthor() isFinishState() {
         author = _realIdentity;
     }
 

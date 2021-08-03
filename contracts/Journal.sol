@@ -12,23 +12,13 @@ contract Journal is Ownable {
         return allPapers[_ipfsHash];
     }
 
+    /*
+        This function should be called by the author of the paper.
+    */
     function addPaper(string memory _ipfsHash, address _paper) public {
         allPapers[_ipfsHash] = Paper(_paper);
         allPapers[_ipfsHash].transferOwnership(owner);
         allPapers[_ipfsHash].addPublisher(owner);
-    }
-
-    function addReviewState(string memory _ipfsHash, Paper.State _state) public {
-        Paper _paper = allPapers[_ipfsHash];
-        Paper.State _beforeState = _paper.paperState();
-        _paper.addReviewState(_state);
-        Paper.State _afterState = _paper.paperState();
-        if (_beforeState != _afterState)
-            emit NewPaperState(_ipfsHash, _afterState);
-    }
-
-    function addFeedBack(string memory _ipfsHash, string memory _feedback) public {
-        allPapers[_ipfsHash].addFeedback(_feedback);
     }
 
     function primaryPaperChecking(bool _checks, string memory _ipfsHash) public onlyOwner() {

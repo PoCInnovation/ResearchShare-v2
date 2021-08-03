@@ -36,24 +36,6 @@ contract Paper is OwnedPermissionManager {
         deadlineDate = block.timestamp + _maxReviewTime;
     }
 
-    function _getPaperData(address _reviewer) view private returns (uint, uint, uint) {
-        uint index = reviewers.length;
-        uint approved;
-        uint rejected;
-
-        for (uint i = 0; i < reviewers.length; i++) {
-            if (reviewStates[i] == State.Approved) {
-                approved += 1;
-            } else if (reviewStates[i] == State.Rejected) {
-                rejected += 1;
-            }
-            if (reviewers[i] == _reviewer) {
-                index = i;
-            }
-        }
-        return (index, approved, rejected);
-    }
-
     modifier isPendingState() {
         
         require(paperState == State.Pending);
@@ -72,23 +54,40 @@ contract Paper is OwnedPermissionManager {
         _;
     }
 
+    function _getPaperData(address _reviewer) view private returns (uint, uint, uint) {
+        uint index = reviewers.length;
+        uint approved;
+        uint rejected;
+
+        for (uint i = 0; i < reviewers.length; i++) {
+            if (reviewStates[i] == State.Approved) {
+                approved += 1;
+            } else if (reviewStates[i] == State.Rejected) {
+                rejected += 1;
+            }
+            if (reviewers[i] == _reviewer) {
+                index = i;
+            }
+        }
+        return (index, approved, rejected);
+    }
+
     function primaryChecking() public onlyOwner() {
         primaryChecked = true;
     }
     
-    function addFeedback(string memory _feedback) public  isPendingState() {
-        require(canReview(msg.sender));
+    function addFeedback(string memory _feedback) public isPendingState() {
+        require(canReview(msg.sender) == true);
     
         pendingFeedbacks.push(FeedBack(_feedback, msg.sender, State.Pending));
     }
 
-    function validateFeedback(uint _indexValidFeedback) public  isPendingState() onlyOwner() {
+    function validateFeedback(uint _indexValidFeedback) public isPendingState() onlyOwner() {
         if (_indexValidFeedback >= 0 || _indexValidFeedback < feedbacks.length) {
             feedbacks[_indexValidFeedback].state = State.Approved;
         }
         revert("No such feedback !");
     }
-
 
     function deleteFeedback(uint _indexRejectedFeedback) public  isPendingState() onlyOwner() {
         if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
@@ -99,7 +98,7 @@ contract Paper is OwnedPermissionManager {
     }
 
     function addReviewState(State _state) public isPendingState() {
-        require(canReview(msg.sender));
+        require(canReview(msg.sender) == true);
 
         uint index;
         uint approved;

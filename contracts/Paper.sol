@@ -1,35 +1,34 @@
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.5;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./OwnedPermissionManager.sol";
 
-contract Paper is Ownable {
-    enum State {onReview, Approved, Rejected}
+contract Paper is OwnedPermissionManager {
+
+    enum State {Pending, Approved, Rejected};
 
     struct FeedBack {
         string feedback;
         address reviewer;
+        State state;
     }
 
-    address private _owner;
     bool private primaryChecked;
     string public ipfsHash;
     string[] public fields;
     State public paperState;
     address private author;
-    address[] private reviewers;
     State[] private reviewStates;
-    FeedBack[] private feedbacks;
-    FeedBack[] private pendingFeedbacks;
+    FeedBack[] public feedbacks;
     uint private submitDate;
     uint private deadlineDate;
 
-    constructor(string memory _ipfsHash, string[] memory _fields, address _author, address[] memory _reviewers, uint _maxReviewTime) {
-        _owner = msg.sender;
+    event FeedbackDeleted(string indexed _rejectedFeedback);
+
+    constructor(string memory _ipfsHash, string[] memory _fields, address _author, uint _maxReviewTime) {
         primaryChecked = false;
         ipfsHash = _ipfsHash;
         fields = _fields;
         author = _author;
-        reviewers = _reviewers;
         reviewStates = new State[](_reviewers.length);
         submitDate = block.timestamp;
         deadlineDate = block.timestamp + _maxReviewTime;
@@ -53,13 +52,9 @@ contract Paper is Ownable {
         return (index, approved, rejected);
     }
 
-    modifier canBeReview() {
-        require(paperState == State.onReview, "This paper can't be reviewed anymore.");
+    modifier isState(State _state) {
         require(block.timestamp <= deadlineDate, "The deadline date has passed.");
-        _;
-    }
-
-    modifier primaryCheckedHasPassed() {
+        require(paperState == State.Pending);
         require(primaryChecked == true);
         _;
     }
@@ -68,38 +63,36 @@ contract Paper is Ownable {
         primaryChecked = true;
     }
     
-    function addFeedback(string memory _feedback) public  primaryCheckedHasPassed() canBeReview() {
-        pendingFeedbacks.push(FeedBack(_feedback, msg.sender));
+    function addFeedback(string memory _feedback) public  isState(paperState) {
+        require(canReview(msg.sender));
+    
+        pendingFeedbacks.push(FeedBack(_feedback, msg.sender, State.Pending));
     }
 
-    function validateFeedback(string memory _validatedFeedback) public  primaryCheckedHasPassed() onlyOwner() {
-        for (uint i = 0; i < pendingFeedbacks.length; i++) {
-            if (keccak256(abi.encodePacked(pendingFeedbacks[i].feedback))
-            == keccak256(abi.encodePacked(_validatedFeedback))) {
-                feedbacks.push(FeedBack(pendingFeedbacks[i].feedback, pendingFeedbacks[i].reviewer));
-                delete pendingFeedbacks[i];
-            }
+    function validateFeedback(uint _indexValidFeedback) public  isState(paperState) onlyOwner() {
+        if (_indexValidFeedback >= 0 || _indexValidFeedback < feedbacks.length) {
+            feedbacks[_indexValidFeedback].state = State.Approved;
         }
         revert("No such feedback !");
     }
 
 
-    function deleteFeedback(string memory _deletedFeedback) public  primaryCheckedHasPassed() onlyOwner() {
-        for (uint i = 0; i < pendingFeedbacks.length; i++) {
-            if (keccak256(abi.encodePacked(pendingFeedbacks[i].feedback))
-             == keccak256(abi.encodePacked(_deletedFeedback))) {
-                delete pendingFeedbacks[i];
-            }
+    function deleteFeedback(uint _indexRejectedFeedback) public  isState(paperState) onlyOwner() {
+        if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
+            emit FeedbackDeleted(feedbacks[_indexRejectedFeedback].feedback);
+            delete feedbacks[_indexRejectedFeedback];
         }
         revert("No such feedback !");
     }
 
-    function addReviewState(State _state) public  primaryCheckedHasPassed() canBeReview() {
+    function addReviewState(State _state) public isState(paperState) {
+        require(canReview(msg.sender));
+
         uint index;
         uint approved;
         uint rejected;
         (index, approved, rejected) = _getPaperData(msg.sender);
-        require(index != reviewers.length, "You are not allowed to review this paper.");
+
         reviewStates[index] = _state;
         if (_state == State.Approved)
             approved += 1;
@@ -107,13 +100,4 @@ contract Paper is Ownable {
             rejected += 1;
     }
 
-    function addFinalPaperState(State _state) public  primaryCheckedHasPassed() onlyOwner() {
-        require (paperState == State.onReview, "The final paper state has already been decided.");
-        uint index;
-        uint approved;
-        uint rejected;
-        (index, approved, rejected) = _getPaperData(msg.sender);
-        require(approved + rejected == reviewers.length, "Please wait until all reviewers have finished their review.");
-        paperState = _state;
-    }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import './App.css';
-import * as zokrates from './Zokrates';
+import * as zokrates from '../utils/Zokrates';
 
 class App extends React.Component {
   state = {

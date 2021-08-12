@@ -4,40 +4,40 @@ import "./OwnedPermissionManager.sol";
 
 contract Paper is OwnedPermissionManager {
 
-    enum State {Pending, RequestChanges, Approved, Rejected};
+    enum State {Pending, RequestChanges, Approved, Rejected}
 
-    struct FeedBack {
+    struct Feedback {
         string feedback;
         address reviewer;
-        State state;
+        State feedbackState;
     }
 
     address private author;
     bool private primaryChecked;
     string private ipfsHash;
     string[] private fields;
-    State public paperState;
-    State[] private reviewStates;
-    FeedBack[] public feedbacks;
+    State private paperState;
+    mapping (address => State) private reviewStates;
+    Feedback[] private feedbacks;
+    uint private totalApproved;
+    uint private totalRejected;
     uint private submitDate;
     uint private deadlineDate;
 
-    event FeedbackDeleted(string indexed _rejectedFeedback);
+    event FeedbackRejected(string indexed _rejectedFeedback);
 
     constructor(string memory _ipfsHash, string[] memory _fields, address _author, uint _maxReviewTime) {
         author = _author;
         primaryChecked = false;
-        isPublished = false;
         ipfsHash = _ipfsHash;
         fields = _fields;
-        reviewStates = new State[](_reviewers.length);
         submitDate = block.timestamp;
         deadlineDate = block.timestamp + _maxReviewTime;
     }
 
     modifier isPendingState() {
         
-        require(paperState == State.Pending);
+        require(paperState == State.Pending || paperState == State.RequestChanges);
         require(primaryChecked == true);
         require(block.timestamp <= deadlineDate, "The deadline date has passed.");
         _;
@@ -48,67 +48,64 @@ contract Paper is OwnedPermissionManager {
         _;
     }
 
-    modifier onlyAuthor() {
-        require (msg.sender == author);
+    modifier onlyReviewer() {
+        require(canReview((msg.sender)) == true);
         _;
     }
 
-    function _getPaperData(address _reviewer) view private returns (uint, uint, uint) {
-        uint index = reviewers.length;
-        uint approved;
-        uint rejected;
-
-        for (uint i = 0; i < reviewers.length; i++) {
-            if (reviewStates[i] == State.Approved) {
-                approved += 1;
-            } else if (reviewStates[i] == State.Rejected) {
-                rejected += 1;
-            }
-            if (reviewers[i] == _reviewer) {
-                index = i;
-            }
-        }
-        return (index, approved, rejected);
+    modifier onlyAuthor() {
+        require (msg.sender == author);
+        _;
     }
 
     function primaryChecking() public onlyOwner() {
         primaryChecked = true;
     }
     
-    function addFeedback(string memory _feedback) public isPendingState() {
+    function addFeedback(string memory _feedback) public onlyReviewer() isPendingState() {
         require(canReview(msg.sender) == true);
     
-        pendingFeedbacks.push(FeedBack(_feedback, msg.sender, State.Pending));
+        feedbacks.push(Feedback(_feedback, msg.sender, State.Pending));
     }
 
-    function validateFeedback(uint _indexValidFeedback) public isPendingState() onlyOwner() {
+    function validateFeedback(uint _indexValidFeedback) public onlyOwner() isPendingState() {
         if (_indexValidFeedback >= 0 || _indexValidFeedback < feedbacks.length) {
-            feedbacks[_indexValidFeedback].state = State.Approved;
+            feedbacks[_indexValidFeedback].feedbackState = State.Approved;
         }
         revert("No such feedback !");
     }
 
-    function deleteFeedback(uint _indexRejectedFeedback) public  isPendingState() onlyOwner() {
+    function rejectFeedback(uint _indexRejectedFeedback) public onlyOwner() isPendingState() {
         if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
-            emit FeedbackDeleted(feedbacks[_indexRejectedFeedback].feedback);
-            delete feedbacks[_indexRejectedFeedback];
+            emit FeedbackRejected(feedbacks[_indexRejectedFeedback].feedback);
+            feedbacks[_indexRejectedFeedback].feedbackState = State.Rejected;
         }
         revert("No such feedback !");
     }
 
-    function addReviewState(State _state) public isPendingState() {
-        require(canReview(msg.sender) == true);
+    function updatePaperState(State _state) private {
+        if (_state == State.RequestChanges)
+            paperState = _state;
+        if (totalApproved + totalRejected == nb_reviewers)
+            paperState = (totalRejected == 0) ? State.Approved : State.Rejected;
+    }
 
-        uint index;
-        uint approved;
-        uint rejected;
-        (index, approved, rejected) = _getPaperData(msg.sender);
+    function addReviewState(State _state) public onlyReviewer() isPendingState() {
 
-        reviewStates[index] = _state;
+        if (reviewStates[msg.sender] != _state) {
+            if (reviewStates[msg.sender] == State.Approved)
+                totalApproved --;
+            else if (reviewStates[msg.sender] == State.Rejected)
+                totalRejected --;
+        }
+
+        reviewStates[msg.sender] = _state;
+
         if (_state == State.Approved)
-            approved += 1;
+            totalApproved ++;
         else if (_state == State.Rejected)
-            rejected += 1;
+            totalRejected ++;
+        updatePaperState(_state);
     }
 
     function claimAuthority(address _realIdentity) public onlyAuthor() isFinishState() {

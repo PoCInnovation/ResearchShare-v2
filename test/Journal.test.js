@@ -23,35 +23,21 @@ describe("Journal", function () {
         await this.contract.addPaper(this.newPaper);
       }
     );
-    it("addFeedback", async function() {
+    it("getPaper", async function() {
 
       // valid case
 
       // invalid case
 
     });
-    it("validateFeedback", async function() {
+    it("primaryPaperChecking", async function() {
 
       // valid case
 
       // invalid case
 
     });
-    it("deleteFeedback", async function() {
-
-      // valid case
-
-      // invalid case
-
-    });
-    it("addReviewState", async function() {
-
-      // valid case
-
-      // invalid case
-
-    });
-    it("claimAuthority", async function() {
+    it("publishPaper", async function() {
 
       // valid case
 

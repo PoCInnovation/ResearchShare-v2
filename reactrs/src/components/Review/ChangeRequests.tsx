@@ -5,16 +5,7 @@ import ClearIcon from '@material-ui/icons/ClearIcon';
 import Button from '@material-ui/core/Button';
 
 export default function ChangeRequests({hash, reviewStatus}) {
-    const [currentAccount, setCurrentAccount] = React.useState(null);
     const [changeRequests, setChangeRequests] = React.useState(null);
-    const [contract, setContract] = React.useState(null);
-
-    const classes = useStyles();
-
-    React.useEffect(() => {
-        loadContract(process.env.REACT_APP_CONTRACT_ADDRESS, setContract);
-    }, []);
-    React.useEffect(() => connectToMetamask(window, setCurrentAccount), []);
 
     const handleClickDeleteChangeRequest = (e, index) => {
         let newArr = [...changeRequests];

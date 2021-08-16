@@ -1,16 +1,16 @@
-#download {
+.download {
     display: flex;
     justify-content: space-between;
 }
 
-#download:last-child {
+.download:last-child {
     margin-left: auto;
 }
 
-#download_input {
+.download-input {
     width: 50%;
 }
 
-#download_button {
+.download-button {
     width: 40%;
 }

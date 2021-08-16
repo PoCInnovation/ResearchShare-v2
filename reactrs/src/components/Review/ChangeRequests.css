@@ -1,0 +1,23 @@
+.none-change-request {
+    float: 'right';
+}
+
+.change-request-wrapper {
+    display: 'flex';
+    justify-content: 'space-between';
+    overflow-wrap: 'break-word';
+}
+
+.change-request-right {
+    width: '20%';
+    float: 'right';
+}
+
+.change-request-left {
+    width: '20%';
+    float: 'left';
+}
+
+.change-request {
+    background-color: '#dddddd';
+}

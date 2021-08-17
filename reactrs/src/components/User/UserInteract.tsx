@@ -1,67 +1,45 @@
-import React, {useState} from 'react';
+import React, {useState, Dispatch, SetStateAction, Fragment} from 'react';
 import './UserInteract.css';
 
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import Input from '@material-ui/core/Input';
 
-async function registerUser(contract, accounts, userInfos) {
-    await contract.methods
-        .registerUser(userInfos.firstName, userInfos.familyName, userInfos.fields)
-        .send({from: accounts[0], gas: '1000000'});
+interface UserInfo {
+    firstName: string;
+    familyName: string;
+    fields: Array<string>;
 }
 
-async function getCurrentUser(contract, accounts) {
-    let user = await contract.methods.getUser().call({from: accounts[0], gas: '1000000'});
-    return (user);
+interface UserInfoItem {
+    0: string;
+    1: string;
+    2: Array<string>;
 }
 
-export async function contractCaller(contractFunction, accounts, setSpinner) {
-    setSpinner(true);
-    const response = await contractFunction();
-    setSpinner(false);
-    return (response);
-}
-
-export function UserInteract({contract, accounts, setSpinner}) {
-    const [userInfos, setUserInfos] = useState({firstName: '', familyName: '', fields: [null]});
+export function UserInteract({contract, setSpinner}: {
+    contract: null, setSpinner: Dispatch<SetStateAction<boolean>>
+}) {
+    const [userInfos, setUserInfos] = useState<UserInfo>({firstName: '', familyName: '', fields: []});
     const [field, setField] = useState('');
-    const [user, setUser] = useState(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [user, setUser] = useState<UserInfoItem | null>(null);
 
-    const handleClickRegisterUser = () => {
-        contractCaller(
-            () => registerUser(contract, accounts, userInfos),
-            accounts,
-            setSpinner
-        )
-        setUserInfos({firstName: '', familyName: '', fields: [null]});
+    function handleClickRegisterUser() {
+        setUserInfos({firstName: '', familyName: '', fields: []});
     }
 
-    const handleClickGetUser = () => {
-        const user = contractCaller(
-            async () => {
-                await getCurrentUser(contract, accounts).then((value) => {
-                    setUser(value);
-                    setSpinner(false);
-                });
-                return (user);
-            },
-            accounts,
-            setSpinner
-        )
+    function handleClickGetUser() {
+        
     }
 
-    const handleClickAddField = () => {
-        if (userInfos.fields[0] == null) {
-            setUserInfos({...userInfos, fields: [field]});
-        } else {
-            setUserInfos({...userInfos, fields: [...userInfos.fields, field]});
-        }
-        setField('')
+    function handleClickAddField() {
+        setUserInfos({...userInfos, fields: [...userInfos.fields, field]});
+        setField('');
     }
 
     return (
-        <React.Fragment>
+        <Fragment>
             <br/>
             <div className="formInputsForUsersRegister">
                 <div>
@@ -78,17 +56,17 @@ export function UserInteract({contract, accounts, setSpinner}) {
                 <br/>
                 <div>
                     <p>Fields:</p>
-                    <div id="fields">
-                        <Input className="input_field" type="text" value={field}
+                    <div className="user-fields">
+                        <Input className="user-input-field" type="text" value={field}
                                onChange={(e) => setField(e.target.value)}/>
-                        <Button className="button_field" color="primary" variant="contained"
+                        <Button className="user-button-field" color="primary" variant="contained"
                                 onClick={handleClickAddField}>
                             <AddIcon/>
                         </Button>
                     </div>
                     <br/>
-                    {userInfos.fields[0] != null ?
-                        <ul id="list">
+                    {userInfos.fields.length !== 0 ?
+                        <ul id="user-list">
                             {userInfos.fields.map((value, index) => {
                                 return <li key={index}>{value}</li>
                             })}
@@ -110,7 +88,7 @@ export function UserInteract({contract, accounts, setSpinner}) {
                         GET USER
                     </Button>
                     :
-                    <React.Fragment>
+                    <Fragment>
                         <p>FirstName: {user[0]}</p>
                         <p>FamilyName: {user[1]}</p>
                         <p>Fields:&nbsp;
@@ -118,9 +96,9 @@ export function UserInteract({contract, accounts, setSpinner}) {
                                 return value.concat(index !== user[2].length - 1 ? ', ' : '')
                             })}
                         </p>
-                    </React.Fragment>
+                    </Fragment>
                 }
             </div>
-        </React.Fragment>
+        </Fragment>
     );
 }

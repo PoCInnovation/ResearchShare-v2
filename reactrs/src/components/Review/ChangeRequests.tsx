@@ -1,38 +1,34 @@
-import React from 'react';
-import "ChangeRequests.css";
+import React, { MouseEvent } from 'react';
+import "./ChangeRequests.css";
+import ChangeRequest, { ChangeRequestElement } from "./ChangeRequest";
 
-import ClearIcon from '@material-ui/icons/ClearIcon';
+import ClearIcon from '@material-ui/icons/Clear';
 import Button from '@material-ui/core/Button';
 
-export default function ChangeRequests({hash, reviewStatus}) {
-    const [changeRequests, setChangeRequests] = React.useState(null);
+export default function ChangeRequests({hash, reviewStatus}: {hash: string, reviewStatus: string}) {
+    const [changeRequests, setChangeRequests] = React.useState<Array<ChangeRequestElement>>([]);
 
-    const handleClickDeleteChangeRequest = (e, index) => {
-        let newArr = [...changeRequests];
-
+    function handleClickDeleteChangeRequest(_: MouseEvent<HTMLButtonElement>, index: number) {
+        const newArr = [...changeRequests];
         newArr.splice(index, 1);
-        setChangeRequests(newArr.length === 0 ? null : newArr);
+        setChangeRequests(newArr);
     }
-    const handleClickAddChangeRequest = (e) => {
-        let newArr;
-        if (changeRequests) {
-            newArr = [...changeRequests];
-            newArr.push({comment: '', page: '', line: ''});
-        } else {
-            newArr = [{comment: '', page: '', line: ''}];
-        }
-        setChangeRequests(newArr)
+
+    function handleClickAddChangeRequest() {
+        const newArr = [...changeRequests, {comment: '', page: '', line: ''}];
+        setChangeRequests(newArr);
     }
-    const handleClickDone = (e) => {
-        submitReview(currentAccount, contract, hash, reviewStatus, changeRequests);
+
+    function handleClickDone() {
+        //submitReview(currentAccount, contract, hash, reviewStatus, changeRequests);
     }
 
     return (
         <div>
-            { changeRequests ? changeRequests.map((value , index) => {
+            { changeRequests.length ? changeRequests.map((value , index) => {
                 return (
-                    <div key={index} className={classes.change_request}>
-                        <Button className={classes.deleteChangeRequest}
+                    <div key={index} className="change-request">
+                        <Button className="none-change-request"
                             onClick={(e) => {handleClickDeleteChangeRequest(e, index)}}>
                             <ClearIcon/>
                         </Button>
@@ -48,8 +44,8 @@ export default function ChangeRequests({hash, reviewStatus}) {
                 )
             }) : <p>No change requests</p> }
             <div style={{marginRight: '5%', marginLeft: '5%'}}>
-                <div className={classes.wrapper}>
-                    <span className={classes.left}><p></p></span>
+                <div className="change-request-wrapper">
+                    <span className="change-request-left"><p></p></span>
                     <Button
                         variant='outlined'
                         onClick={handleClickAddChangeRequest}
@@ -57,7 +53,7 @@ export default function ChangeRequests({hash, reviewStatus}) {
                         Add Change Request
                     </Button>
                     <Button
-                        className={classes.right}
+                        className="change-request-right"
                         onClick={handleClickDone}
                         variant='contained'
                         color='primary'

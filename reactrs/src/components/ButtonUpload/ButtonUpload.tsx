@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import { CID } from "ipfs-http-client";
 import useIPFS from '../../utils/Ipfs';
 import './ButtonUpload.css';
 
@@ -9,7 +10,7 @@ export default function ButtonUpload() {
     const IPFS = useIPFS();
     const [filename, setFileName] = React.useState("");
     const [fileContent, setFileContent] = React.useState<File | null>(null);
-    const [fileHash, setFileHash] = React.useState("");
+    const [fileHash, setFileHash] = React.useState<CID | null>(null);
     const [paperField, setPaperField] = React.useState("");
 
     function changeField(event: ChangeEvent<HTMLInputElement>) {
@@ -41,7 +42,7 @@ export default function ButtonUpload() {
                 </Button>
             </div>
             <br/>
-            {fileHash ? <div id="upload-success">{`Success: ${fileHash}`}</div> : null}
+            {fileHash ? <div id="upload-success">{`Success: ${fileHash.toString()}`}</div> : null}
         </div>
     );
 }

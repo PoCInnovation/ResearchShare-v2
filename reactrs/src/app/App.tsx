@@ -5,7 +5,7 @@ import MetaMask from '../components/MetaMask/MetaMask';
 import IpfsHandling from '../components/IpfsHandler/IpfsHandler';
 import Review from '../components/Review/Review';
 
-export const App = () => {
+export default function App() {
   return (
     <div className="app">
       <h1>Research Share</h1>

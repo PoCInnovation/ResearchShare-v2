@@ -1,6 +1,7 @@
 import React from 'react';
+import "./MetaMask.css";
 
-import { ContractUser } from '../User/UserContract';
+import UserContract from '../User/UserContract';
 import { useMetaMask } from 'metamask-react';
 
 export default function MetaMask() {
@@ -9,7 +10,7 @@ export default function MetaMask() {
     return (
         <div className="metamask-register">
             <h2>Register</h2>
-            { account ?? <ContractUser accountsAddresses={account}/> }
+            { account ?? <UserContract/> }
         </div>
     )
 }

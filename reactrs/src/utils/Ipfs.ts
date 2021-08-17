@@ -1,5 +1,5 @@
 import { useContext, createContext } from 'react';
-import create from 'ipfs-http-client';
+import { create } from 'ipfs-http-client';
 
 const IPFSContext = createContext(create({
     host : 'ipfs.infura.io',

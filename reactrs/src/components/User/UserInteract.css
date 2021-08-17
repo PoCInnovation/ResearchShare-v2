@@ -20,19 +20,19 @@
     width: 50px;
 }
 
-#list {
+.user-list {
     margin-left: 10%;
     text-align: left;
 }
 
-#input_field {
+.user-input-field {
     width: 200px;
 }
 
-#button_field {
+.user-button-field {
     max-width: 100%;
 }
 
-.fields > ul {
+.user-fields > ul {
     text-align: left;
 }

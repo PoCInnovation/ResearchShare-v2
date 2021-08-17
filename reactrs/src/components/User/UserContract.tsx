@@ -1,43 +1,35 @@
-import React, { useState, useEffect } from 'react';
-
+import { useState } from 'react';
+import { css } from "@emotion/react";
 import PulseLoader from 'react-spinners/PulseLoader';
 
 import { UserInteract } from './UserInteract';
 import './UserContract.css';
 
-const rs_contract = require('../../contracts/compiledContract.json').contracts["researchShare.sol"].ResearchShare;
+const pulseLoading = css`
+    display: block;
+`;
 
-async function loadContract(address, setContract, setSpinner) {
-    setSpinner(true);
-    const contract = await new window.web3.eth.Contract(rs_contract.abi, address);
-    await setContract(contract);
-    setSpinner(false);
-}
+const pulseNotLoading = css`
+    display: none;
+`;
 
-export function ContractUser({accountsAddresses}) {
+export default function UserContract() {
     const [spinner, setSpinner] = useState(false);
-    const [contract, setContract] = useState(null);
-
-    const accounts = [accountsAddresses];
-    useEffect(() => {
-        loadContract(process.env.REACT_APP_CONTRACT_ADDRESS, setContract, setSpinner);
-    }, []);
 
     return (
         <div id="ConcatContract">
-            <div id="margins">
-                <div style={{display: 'inline-block', position: 'relative', float: 'right'}}>
+            <div className="user-margins">
+                <div className="user-loader">
                     <PulseLoader
-                        css={spinner ? {display: 'block'} : {display: 'none'}}
+                        css={spinner ? pulseLoading : pulseNotLoading}
                         size={10}
                         color={"#123abc"}
                     />
                 </div>
 
-                { contract ?
+                { /*contract*/null ?
                     <UserInteract
-                        contract={contract}
-                        accounts={accounts}
+                        contract={/*contract*/null}
                         setSpinner={setSpinner}
                     />
                 : null }

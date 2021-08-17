@@ -1,3 +1,9 @@
-#margins {
+.user-margins {
     margin-bottom: 10%;
+}
+
+.user-loader {
+    display: 'inline-block';
+    position: 'relative';
+    float: 'right'
 }

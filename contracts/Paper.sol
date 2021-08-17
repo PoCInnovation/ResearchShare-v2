@@ -44,12 +44,12 @@ contract Paper is OwnedPermissionManager {
     }
 
     modifier isFinishState() {
-        require(paperState != State.Pending && paperState != State.RequestChanges);
+        require(paperState != State.Pending && paperState != State.RequestChanges, "This paper review is still ongoing.");
         _;
     }
 
     modifier onlyReviewer() {
-        require(canReview((msg.sender)) == true);
+        require(canReview((msg.sender)) == true, "You are not part of the reviewer's list. Therefore, you can't perform this operation.");
         _;
     }
 
@@ -69,7 +69,7 @@ contract Paper is OwnedPermissionManager {
     }
 
     function validateFeedback(uint _indexValidFeedback) public onlyOwner() isPendingState() {
-        if (_indexValidFeedback >= 0 || _indexValidFeedback < feedbacks.length) {
+        if (_indexValidFeedback > 0 || _indexValidFeedback < feedbacks.length) {
             feedbacks[_indexValidFeedback].feedbackState = State.Approved;
         }
         revert("No such feedback !");

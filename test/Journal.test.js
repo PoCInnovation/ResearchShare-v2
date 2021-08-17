@@ -9,39 +9,42 @@ const {
 
 const Journal = contract.fromArtifact("Journal");
 const Paper = contract.fromArtifact('Paper');
-const PaperState = {
-    "onReview": 0,
-    "Approved": 1,
-    "Rejected": 2
+const State = {
+    "Pending": 0,
+    "RequestChanges": 1,
+    "Approved": 2,
+    "Rejected": 3
 };
 
+const ipfsHash = "0000";
+const authorAddress = 3333333;
+const reviewTime = 100000;
 
-describe("Journal", function () {
+
+describe("Journal allowed operations", function () {
     beforeEach(async function () {
         this.contract = await Journal.new();
-        this.newPaper = await Paper.new("0000", ["Physics"], 3333333, 1000);
-        await this.contract.addPaper(this.newPaper);
+        this.newPaper = await Paper.new(ipfsHash, ["Physics"], authorAddress, reviewTime);
       }
     );
+    it("validateFeedback", async function() {
+
+    });
+    it("deleteFeedback", async function() {
+
+    });
+    it("addPaper", async function() {
+      await this.contract.addPaper(this.newPaper);
+      expect(await this.newPaper.owner()).to.be.equal(await this.contract.owner());
+      expect(this.contract.allPapers[ipfsHash]).to.be.equal(this.newPaper);
+
+    });
     it("getPaper", async function() {
+      await this.contract.addPaper(this.newPaper);
+      expect(this.newPaper.ipfsHash).to.be.equal(await ipfsHash);
 
-      // valid case
-
-      // invalid case
-
-    });
-    it("primaryPaperChecking", async function() {
-
-      // valid case
-
-      // invalid case
-
-    });
+    }); 
     it("publishPaper", async function() {
-
-      // valid case
-
-      // invalid case
 
     });
   }

@@ -1,77 +1,115 @@
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.5;
 
-contract Paper {
-    enum State {onReview, Approved, Rejected}
+import "./OwnedPermissionManager.sol";
 
-    struct FeedBack {
+contract Paper is OwnedPermissionManager {
+
+    enum State {Pending, RequestChanges, Approved, Rejected}
+
+    struct Feedback {
         string feedback;
         address reviewer;
+        State feedbackState;
     }
 
-    string public ipfsHash;
-    string[] public fields;
-    State public paperState;
-    address private owner;
-    address[] private reviewers;
-    State[] private reviewStates;
-    FeedBack[] private feedbacks;
+    address private author;
+    bool private primaryChecked;
+    string private ipfsHash;
+    string[] private fields;
+    State private paperState;
+    mapping (address => State) private reviewStates;
+    Feedback[] private feedbacks;
+    uint private totalApproved;
+    uint private totalRejected;
     uint private submitDate;
     uint private deadlineDate;
 
-    constructor(string memory _ipfsHash, string[] memory _fields, address _owner, address[] memory _reviewers, uint _maxReviewTime) {
+    event FeedbackRejected(string indexed _rejectedFeedback);
+
+    constructor(string memory _ipfsHash, string[] memory _fields, address _author, uint _maxReviewTime) {
+        author = _author;
+        primaryChecked = false;
         ipfsHash = _ipfsHash;
         fields = _fields;
-        owner = _owner;
-        reviewers = _reviewers;
-        reviewStates = new State[](_reviewers.length);
         submitDate = block.timestamp;
         deadlineDate = block.timestamp + _maxReviewTime;
     }
 
-    function _getPaperData(address _reviewer) view private returns (uint, uint, uint) {
-        uint index = reviewers.length;
-        uint approved;
-        uint rejected;
-
-        for (uint i = 0; i < reviewers.length; i++) {
-            if (reviewStates[i] == State.Approved) {
-                approved += 1;
-            } else if (reviewStates[i] == State.Rejected) {
-                rejected += 1;
-            }
-            if (reviewers[i] == _reviewer) {
-                index = i;
-            }
-        }
-        return (index, approved, rejected);
-    }
-
-    modifier canBeReview() {
-        require(paperState == State.onReview, "This paper can't be reviewed anymore.");
+    modifier isPendingState() {
+        
+        require(paperState == State.Pending || paperState == State.RequestChanges);
+        require(primaryChecked == true);
         require(block.timestamp <= deadlineDate, "The deadline date has passed.");
         _;
     }
+
+    modifier isFinishState() {
+        require(paperState != State.Pending && paperState != State.RequestChanges, "This paper review is still ongoing.");
+        _;
+    }
+
+    modifier onlyReviewer() {
+        require(canReview((msg.sender)) == true, "You are not part of the reviewer's list. Therefore, you can't perform this operation.");
+        _;
+    }
+
+    modifier onlyAuthor() {
+        require (msg.sender == author);
+        _;
+    }
+
+    function primaryChecking() public onlyOwner() {
+        primaryChecked = true;
+    }
     
-    function addFeedback(string memory _feedback) public canBeReview() {
-        feedbacks.push(FeedBack(_feedback, msg.sender));
+    function addFeedback(string memory _feedback) public onlyReviewer() isPendingState() {
+        require(canReview(msg.sender) == true);
+    
+        feedbacks.push(Feedback(_feedback, msg.sender, State.Pending));
     }
 
-
-    function addReviewState(State _state) public canBeReview() {
-        uint index;
-        uint approved;
-        uint rejected;
-        (index, approved, rejected) = _getPaperData(msg.sender);
-        require(index != reviewers.length, "You are not allowed to review this paper.");
-        reviewStates[index] = _state;
-        if (_state == State.Approved)
-            approved += 1;
-        else if (_state == State.Rejected)
-            rejected += 1;
-        if (approved >= reviewers.length) {
-            paperState = State.Approved;
-        } else if (rejected >= reviewers.length / 2) {
-            paperState = State.Rejected;
+    function validateFeedback(uint _indexValidFeedback) public onlyOwner() isPendingState() {
+        if (_indexValidFeedback > 0 || _indexValidFeedback < feedbacks.length) {
+            feedbacks[_indexValidFeedback].feedbackState = State.Approved;
         }
+        revert("No such feedback !");
     }
+
+    function rejectFeedback(uint _indexRejectedFeedback) public onlyOwner() isPendingState() {
+        if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
+            emit FeedbackRejected(feedbacks[_indexRejectedFeedback].feedback);
+            feedbacks[_indexRejectedFeedback].feedbackState = State.Rejected;
+        }
+        revert("No such feedback !");
+    }
+
+    function updatePaperState(State _state) private {
+        if (_state == State.RequestChanges)
+            paperState = _state;
+        if (totalApproved + totalRejected == nb_reviewers)
+            paperState = (totalRejected == 0) ? State.Approved : State.Rejected;
+    }
+
+    function addReviewState(State _state) public onlyReviewer() isPendingState() {
+
+        if (reviewStates[msg.sender] != _state) {
+            if (reviewStates[msg.sender] == State.Approved)
+                totalApproved --;
+            else if (reviewStates[msg.sender] == State.Rejected)
+                totalRejected --;
+        }
+
+        reviewStates[msg.sender] = _state;
+
+        if (_state == State.Approved)
+            totalApproved ++;
+        else if (_state == State.Rejected)
+            totalRejected ++;
+        updatePaperState(_state);
+    }
+
+    function claimAuthority(address _realIdentity) public onlyAuthor() isFinishState() {
+        author = _realIdentity;
+    }
+
 }

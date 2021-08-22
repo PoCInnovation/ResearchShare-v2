@@ -1,4 +1,4 @@
-const { expect } = require("chai");
+/*const { expect } = require("chai");
 const { accounts, contract } = require("@openzeppelin/test-environment");
 const {
   BN, // Big Number support
@@ -49,3 +49,4 @@ describe("Journal allowed operations", function () {
     });
   }
 );
+*/

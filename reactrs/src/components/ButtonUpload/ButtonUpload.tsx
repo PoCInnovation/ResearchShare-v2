@@ -1,13 +1,12 @@
 import React, { ChangeEvent } from 'react';
 import { CID } from "ipfs-http-client";
-import useIPFS from '../../utils/Ipfs';
+import { IPFS } from '../../utils/Ipfs';
 import './ButtonUpload.css';
 
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 
 export default function ButtonUpload() {
-    const IPFS = useIPFS();
     const [filename, setFileName] = React.useState("");
     const [fileContent, setFileContent] = React.useState<File | null>(null);
     const [fileHash, setFileHash] = React.useState<CID | null>(null);

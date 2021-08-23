@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 import Button from '@material-ui/core/Button';
-import useIPFS from '../../utils/Ipfs';
+import { IPFS } from '../../utils/Ipfs';
 import './ButtonDownload.css';
 
 import fileDownload from 'js-file-download';
@@ -8,7 +8,6 @@ import all from 'it-all';
 
 export default function ButtonDownload() {
     const [cid, setCID] = useState("");
-    const IPFS = useIPFS();
 
     async function handleClick() {
         if (cid !== "") {

@@ -37,12 +37,12 @@ export default function Review() {
                                 ) }
                             </NativeSelect>
                         </FormControl>
-                    </div><br/>
+                    </div>
                     <div className="review-cid">
                         <TextField id="standard-basic" label="Hash" value={cid} onChange={handleChange}/>
                     </div>
                 </div>
-                <br/><ChangeRequests hash={cid} reviewStatus={reviewStatus}/>
+                <ChangeRequests hash={cid} reviewStatus={reviewStatus}/>
             </div>
         </div>
     );

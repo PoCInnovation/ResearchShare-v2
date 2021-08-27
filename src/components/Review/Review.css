@@ -21,7 +21,8 @@
     flex-direction: 'row';
     justify-content: 'space-around';
     margin-left: '5%';
-    margin-right: '5%'
+    margin-right: '5%';
+    margin-bottom: 25px;
 }
 
 .review {

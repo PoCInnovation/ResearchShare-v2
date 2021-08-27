@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract Journal is Ownable {
     mapping (string => Paper) public allPapers;
     mapping (string => Paper) public publishedPapers;
-    event NewPaperState(string indexed _ipfsHash, Paper.State indexed _newState);
+    event NewPaper(Paper paper);
 
     function getPaper(string memory _ipfsHash) public view returns (Paper) {
         return allPapers[_ipfsHash];
@@ -16,11 +16,12 @@ contract Journal is Ownable {
     /*
         This function should be called by the author of the paper.
     */
-    function addPaper(string memory _ipfsHash, address _paper) public {
-        allPapers[_ipfsHash] = Paper(_paper);
-        if (owner() != allPapers[_ipfsHash].owner())
-            allPapers[_ipfsHash].transferOwnership(owner());
-        allPapers[_ipfsHash].addPublisher(owner());
+    function addPaper(string memory _ipfsHash, uint _maxReviewTime) public returns (Paper) {
+        Paper paper = new Paper(_ipfsHash, new string[](0), msg.sender, _maxReviewTime);
+        allPapers[_ipfsHash] = paper;
+        paper.addPublisher(msg.sender);
+        emit NewPaper(paper);
+        return paper;
     }
 
     function primaryPaperChecking(bool _checks, string memory _ipfsHash) public onlyOwner() {

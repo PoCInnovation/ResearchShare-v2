@@ -5,26 +5,29 @@
   "author": "Ersikan <julien.philippon@epitech.eu>",
   "license": "MIT",
   "scripts": {
+    "generate-types": "typechain --target=truffle-v5 'build/contracts/*.json'",
+    "postinstall": "truffle compile && yarn generate-types",
     "ganache": "ganache-cli --deterministic",
-    "migrate": "truffle migrate",
-    "test": "truffle compile && ts-mocha --exit --recursive --extension js,ts",
+    "migrate": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate",
+    "test": "truffle compile && yarn generate-types && yarn migrate && truffle test",
     "watch": "yarn test --watch",
     "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org"
   },
   "dependencies": {},
   "devDependencies": {
     "@openzeppelin/contracts": "^4.0.0",
-    "@openzeppelin/test-environment": "^0.1.9",
-    "@openzeppelin/test-helpers": "^0.5.10",
     "@remix-project/remixd": "^0.3.5",
+    "@typechain/truffle-v5": "^5.0.0",
     "@types/chai": "^4.2.18",
     "@types/expect": "^24.3.0",
     "@types/mocha": "^8.2.2",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
     "chai": "^4.3.4",
+    "eslint": "^7.32.0",
     "ganache-cli": "^6.12.2",
-    "mocha": "^8.3.2",
     "truffle": "^5.3.3",
-    "ts-mocha": "^8.0.0",
+    "typechain": "^5.1.2",
     "typescript": "^4.3.2"
   }
 }

@@ -8,9 +8,8 @@ export default function IpfsHandling() {
     return (
         <div className="ipfs-handling">
             <div className="ipfs-margins">
-                <h2>Research Paper</h2>
+                <h2 className="ipfs-title">Research Paper</h2>
                 <ButtonUpload/>
-                <br/><br/>
                 <ButtonDownload/>
             </div>
         </div>

@@ -25,7 +25,7 @@ export default function Review() {
         <div className="review">
             <div className="review-margins">
                 <div className="review-title">
-                    <h2>Review</h2>
+                    <h2 className="review-title-elem">Review</h2>
                 </div>
                 <div className="review-title-status">
                     <div className="review-status">

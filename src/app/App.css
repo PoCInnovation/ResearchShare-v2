@@ -4,6 +4,10 @@
   margin-right: 5%;
 }
 
+.app-title {
+  margin-bottom: 30px;
+}
+
 .app-wrapper {
   display: flex;
   justify-content: space-between;

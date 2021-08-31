@@ -9,9 +9,13 @@
     "migrate": "truffle migrate",
     "test": "truffle compile && ts-mocha --exit --recursive --extension js,ts",
     "watch": "yarn test --watch",
-    "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org"
+    "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org",
+    "build": "truffle compile && typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@typechain/web3-v1": "^3.1.0",
+    "typechain": "^5.1.2"
+  },
   "devDependencies": {
     "@openzeppelin/contracts": "^4.0.0",
     "@openzeppelin/test-environment": "^0.1.9",

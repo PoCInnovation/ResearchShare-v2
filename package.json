@@ -44,8 +44,8 @@
     "zokrates-js": "^1.0.34"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "yarn --cwd ./src/contracts build && react-app-rewired start",
+    "build": "yarn --cwd ./src/contracts build && react-app-rewired build",
     "eject": "react-app-rewired eject",
     "test": "mocha"
   },

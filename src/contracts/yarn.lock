@@ -2094,6 +2094,13 @@
     strip-indent "^2.0.0"
     super-split "^1.1.0"
 
+"@typechain/truffle-v5@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@typechain/truffle-v5/-/truffle-v5-5.1.0.tgz#fa7f4b66a1074b3af3034941abe3776d9561d373"
+  integrity sha512-Q+MHDK3L8ney3xvh1JxAzVDS9emeeQI9ozBc+KhZzgzBNZBf7MPyab0oJqX1AVH6ycMGJxe2q8OUyx1HT/7aaQ==
+  dependencies:
+    lodash "^4.17.15"
+
 "@typechain/web3-v1@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@typechain/web3-v1/-/web3-v1-3.1.0.tgz#3124cd25589dad93c5115acb87c65ea708d89ab3"

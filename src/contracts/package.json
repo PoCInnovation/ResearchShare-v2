@@ -13,6 +13,7 @@
     "build": "truffle compile && typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json"
   },
   "dependencies": {
+    "@typechain/truffle-v5": "^5.1.0",
     "@typechain/web3-v1": "^3.1.0",
     "typechain": "^5.1.2"
   },

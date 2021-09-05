@@ -51,7 +51,7 @@ contract("Paper", async (accounts) => {
 
     // valid case
     await paper.validateFeedback(0);
-    (expect((await paper.feedbacks(0))[2]).to.be).bignumber.equal(
+    expect((await paper.feedbacks(0))[2]).to.be.bignumber.equal(
       new BN(State["Approved"])
     );
 
@@ -64,7 +64,7 @@ contract("Paper", async (accounts) => {
 
     // valid case
     await paper.validateFeedback(0);
-    (expect((await paper.feedbacks(0))[2]).to.be).bignumber.equal(
+    expect((await paper.feedbacks(0))[2]).to.be.bignumber.equal(
       new BN(State["Rejected"])
     );
 
@@ -74,13 +74,13 @@ contract("Paper", async (accounts) => {
     const paper = await getPaper();
     // valid case
 
-    (expect(paper.paperState).to.be).bignumber.equal(new BN(State["Pending"]));
+    expect(paper.paperState).to.be.bignumber.equal(new BN(State["Pending"]));
     await paper.addReviewState(new BN(State["Approved"]));
     const reviewState = await paper.reviewStates(await (await Journal.deployed()).owner());
-    (expect(reviewState).to.be).bignumber.equal(
+    expect(reviewState).to.be.bignumber.equal(
       new BN(State["Approved"])
     );
-    (expect(paper.paperState).to.be).bignumber.equal(new BN(State["Approved"]));
+    expect(paper.paperState).to.be.bignumber.equal(new BN(State["Approved"]));
   });
   it("addReviewState_invalidCase", async function () {
     const paper = await getPaper();

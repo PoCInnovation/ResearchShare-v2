@@ -1,3 +1,4 @@
+/*
 import { expect } from "chai";
 import { accounts, contract } from "@openzeppelin/test-environment";
 // import {
@@ -58,3 +59,4 @@ describe("RSAuth", function () {
   });
 
 });
+*/

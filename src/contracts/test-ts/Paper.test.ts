@@ -74,13 +74,13 @@ contract("Paper", async (accounts) => {
     const paper = await getPaper();
     // valid case
 
-    expect(paper.paperState).to.be.bignumber.equal(new BN(State["Pending"]));
+    expect(await paper.paperState()).to.be.bignumber.equal(new BN(State["Pending"]));
     await paper.addReviewState(new BN(State["Approved"]));
     const reviewState = await paper.reviewStates(await (await Journal.deployed()).owner());
     expect(reviewState).to.be.bignumber.equal(
       new BN(State["Approved"])
     );
-    expect(paper.paperState).to.be.bignumber.equal(new BN(State["Approved"]));
+    expect(await paper.paperState()).to.be.bignumber.equal(new BN(State["Approved"]));
   });
   it("addReviewState_invalidCase", async function () {
     const paper = await getPaper();

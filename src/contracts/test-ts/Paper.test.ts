@@ -1,5 +1,12 @@
+import { expectRevert } from '@openzeppelin/test-helpers';
+import BN from 'bn.js';
+import ChaiBN from 'chai-bn';
+import chai from 'chai';
+
+chai.use(ChaiBN(BN));
+
 const Journal = artifacts.require("Journal");
-const Paper = artifacts.require("Paper")
+const Paper = artifacts.require("Paper");
 
 const State = {
   Pending: 0,
@@ -27,24 +34,24 @@ contract("Paper", async (accounts) => {
     await paper.addFeedback("The paper is correct.");
 
     // valid case
-    expect(paper.feedbacks[0]).to.be.equal("The paper is correct.");
+    expect((await paper.feedbacks(0))[0]).to.be.equal("The paper is correct.");
 
     // invalid case
-    await paper.removeReviewer(await Journal.owner());
-    expectRevert(
-      await paper.addFeedback("The paper is just rubbish."),
+    await paper.removeReviewer(await (await Journal.deployed()).owner());
+    await expectRevert(
+      paper.addFeedback("The paper is just rubbish."),
       "You are not part of the reviewer's list. \
           Therefore, you can't perform this operation."
     );
   });
   it("validateFeedback", async function () {
     const paper = await getPaper();
-    await paper.addReviewer(await Journal.owner());
+    await paper.addReviewer(await (await Journal.deployed()).owner());
     await paper.addFeedback("The paper is correct.");
 
     // valid case
     await paper.validateFeedback(0);
-    expect(paper.feedbacks[0].feedbackState).to.be.bignumber.equal(
+    (expect((await paper.feedbacks(0))[2]).to.be).bignumber.equal(
       new BN(State["Approved"])
     );
 
@@ -52,12 +59,12 @@ contract("Paper", async (accounts) => {
   });
   it("deleteFeedback", async function () {
     const paper = await getPaper();
-    await paper.addReviewer(await Journal.owner());
+    await paper.addReviewer(await (await Journal.deployed()).owner());
     await paper.addFeedback("The paper is correct.");
 
     // valid case
     await paper.validateFeedback(0);
-    expect(paper.feedbacks[0].feedbackState).to.be.bignumber.equal(
+    (expect((await paper.feedbacks(0))[2]).to.be).bignumber.equal(
       new BN(State["Rejected"])
     );
 
@@ -67,18 +74,18 @@ contract("Paper", async (accounts) => {
     const paper = await getPaper();
     // valid case
 
-    expect(paper.paperState).to.be.bignumber.equal(new BN(State["Pending"]));
+    (expect(paper.paperState).to.be).bignumber.equal(new BN(State["Pending"]));
     await paper.addReviewState(new BN(State["Approved"]));
-    const reviewStates = await paper.reviewStates;
-    expect(reviewStates[await this.Journal.owner()]).to.be.bignumber.equal(
+    const reviewState = await paper.reviewStates(await (await Journal.deployed()).owner());
+    (expect(reviewState).to.be).bignumber.equal(
       new BN(State["Approved"])
     );
-    expect(paper.paperState).to.be.bignumber.equal(new BN(State["Approved"]));
+    (expect(paper.paperState).to.be).bignumber.equal(new BN(State["Approved"]));
   });
   it("addReviewState_invalidCase", async function () {
     const paper = await getPaper();
-    expectRevert(
-      await paper.addReviewState("The paper is just rubbish."),
+    await expectRevert(
+      paper.addReviewState("The paper is just rubbish."),
       "You are not part of the reviewer's list. \
           Therefore, you can't perform this operation."
     );
@@ -87,15 +94,15 @@ contract("Paper", async (accounts) => {
     const paper = await getPaper();
 
     // invalid case
-    expectRevert(
-      await paper.claimAuthority(),
+    await expectRevert(
+      paper.claimAuthority(""),
       "This paper review is still ongoing."
     );
 
     // valid case
-    expect(paper.author).to.be.equal(accounts[1]);
-    await paper.addReviewer(await this.Journal.owner());
-    await paper.claimAuthority(this.Journal.owner());
-    expect(paper.author).to.be.equal(this.Journal.owner());
+    expect(await paper.author()).to.be.equal(accounts[1]);
+    await paper.addReviewer(await (await Journal.deployed()).owner());
+    await paper.claimAuthority(await (await Journal.deployed()).owner());
+    expect(await paper.author()).to.be.equal(await (await Journal.deployed()).owner());
   });
 });

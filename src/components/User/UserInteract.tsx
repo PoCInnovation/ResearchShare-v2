@@ -29,6 +29,7 @@ export function UserInteract({contract, setSpinner}: {
         setUserInfos({firstName: '', familyName: '', fields: []});
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     function handleClickGetUser() {
         
     }

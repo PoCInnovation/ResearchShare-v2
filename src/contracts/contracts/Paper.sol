@@ -13,13 +13,13 @@ contract Paper is OwnedPermissionManager {
         State feedbackState;
     }
 
-    address private author;
+    address public author;
     bool private primaryChecked;
     string private ipfsHash;
     string[] private fields;
-    State private paperState;
-    mapping (address => State) private reviewStates;
-    Feedback[] private feedbacks;
+    State public paperState;
+    mapping (address => State) public reviewStates;
+    Feedback[] public feedbacks;
     uint private totalApproved;
     uint private totalRejected;
     uint private submitDate;

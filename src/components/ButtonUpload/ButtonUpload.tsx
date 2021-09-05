@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 
 export default function ButtonUpload() {
-    const [filename, setFileName] = React.useState("");
     const [fileContent, setFileContent] = React.useState<File | null>(null);
     const [fileHash, setFileHash] = React.useState<CID | null>(null);
     const [paperField, setPaperField] = React.useState("");
@@ -18,12 +17,11 @@ export default function ButtonUpload() {
 
     function changeFile(event: ChangeEvent<HTMLInputElement>) {
         setFileContent(event.target.files?.[0] ?? null);
-        setFileName(event.target.files?.[0].name ?? "");
     }
 
     async function submitPaper() {
-        if (filename && fileContent) {
-            const ext = filename.split('.').pop() ?? ".txt";
+        if (fileContent) {
+            const ext = fileContent.name.split('.').pop() ?? ".txt";
             await IPFS.files.mkdir("/reactrs-paper");
             await IPFS.files.write(`/reactrs-paper/${paperField}${ext}`, fileContent, { create: true });
             const direntry = await IPFS.files.stat("/reactrs-paper");

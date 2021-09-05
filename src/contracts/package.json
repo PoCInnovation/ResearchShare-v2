@@ -7,7 +7,7 @@
   "scripts": {
     "ganache": "ganache-cli --deterministic",
     "migrate": "truffle migrate",
-    "test": "truffle compile && ts-mocha --exit --recursive --extension js,ts",
+    "test": "yarn build && ts-mocha --exit --recursive --extension js,ts test",
     "watch": "yarn test --watch",
     "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org",
     "build": "truffle compile && typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json"

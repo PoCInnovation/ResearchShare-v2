@@ -6,12 +6,12 @@ import ButtonDownload from '../ButtonDownload/ButtonDownload';
 
 export default function IpfsHandling() {
     return (
-        <div className="ipfs-handling">
+        <section className="ipfs-handling">
             <div className="ipfs-margins">
                 <h2 className="ipfs-title">Research Paper</h2>
                 <ButtonUpload/>
                 <ButtonDownload/>
             </div>
-        </div>
+        </section>
     );
 }

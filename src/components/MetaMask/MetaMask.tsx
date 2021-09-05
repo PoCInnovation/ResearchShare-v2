@@ -18,9 +18,9 @@ export default function MetaMask() {
     const MetaMaskInfo = useMetaMask();
 
     return (
-        <div className="metamask-register">
+        <section className="metamask-register">
             <h2 className="metamask-title">Register/Login</h2>
             { MetaMaskSteps[MetaMaskInfo.status](MetaMaskInfo) }
-        </div>
+        </section>
     )
 }

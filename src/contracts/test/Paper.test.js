@@ -7,7 +7,7 @@ const {
   expectRevert, // Assertions for transactions that should fail
 } = require("@openzeppelin/test-helpers");
 
-const Papers = contract.fromArtifact("Papers");
+const Papers = contract.fromArtifact("Paper");
 const PaperState = {
     "onReview": 0,
     "Approved": 1,

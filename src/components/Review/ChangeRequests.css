@@ -21,3 +21,23 @@
 .change-request {
     background-color: '#dddddd';
 }
+
+.change-request-page {
+    width: '10%'; 
+    float: 'left'; 
+    margin-left: '5%'; 
+    max-width: '60px'
+}
+
+.change-request-line {
+    width: '10%';
+    float: 'left';
+    margin-left: '1%';
+    max-width: '60px';
+}
+
+.change-request-comment {
+    margin-top: '5%';
+    margin-left: '5%';
+    margin-right: '5%';
+}

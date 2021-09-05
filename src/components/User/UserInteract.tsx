@@ -1,4 +1,4 @@
-import React, {useState, Dispatch, SetStateAction, Fragment} from 'react';
+import {useState, Dispatch, SetStateAction} from 'react';
 import './UserInteract.css';
 
 import Button from '@material-ui/core/Button';
@@ -39,7 +39,7 @@ export function UserInteract({contract, setSpinner}: {
     }
 
     return (
-        <Fragment>
+        <>
             <br/>
             <div className="formInputsForUsersRegister">
                 <div>
@@ -88,7 +88,7 @@ export function UserInteract({contract, setSpinner}: {
                         GET USER
                     </Button>
                     :
-                    <Fragment>
+                    <>
                         <p>FirstName: {user[0]}</p>
                         <p>FamilyName: {user[1]}</p>
                         <p>Fields:&nbsp;
@@ -96,9 +96,9 @@ export function UserInteract({contract, setSpinner}: {
                                 return value.concat(index !== user[2].length - 1 ? ', ' : '')
                             })}
                         </p>
-                    </Fragment>
+                    </>
                 }
             </div>
-        </Fragment>
+        </>
     );
 }

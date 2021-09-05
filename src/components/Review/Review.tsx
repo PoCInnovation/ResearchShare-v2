@@ -22,7 +22,7 @@ export default function Review() {
     }
 
     return (
-        <div className="review">
+        <section className="review">
             <div className="review-margins">
                 <div className="review-title">
                     <h2 className="review-title-elem">Review</h2>
@@ -44,6 +44,6 @@ export default function Review() {
                 </div>
                 <ChangeRequests hash={cid} reviewStatus={reviewStatus}/>
             </div>
-        </div>
+        </section>
     );
 }

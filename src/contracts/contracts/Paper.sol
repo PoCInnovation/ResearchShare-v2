@@ -33,6 +33,7 @@ contract Paper is OwnedPermissionManager {
         ipfsHash = _ipfsHash;
         fields = _fields;
         submitDate = block.timestamp;
+        paperState = State.Pending;
         deadlineDate = block.timestamp + _maxReviewTime;
     }
 

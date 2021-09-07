@@ -17,11 +17,11 @@ contract Journal is Ownable {
         This function should be called by the author of the paper.
     */
     function addPaper(string memory _ipfsHash, address _paper) public returns (Paper) {
-        Paper paper = Paper(_paper);
-        allPapers[_ipfsHash] = paper;
-        paper.addPublisher(msg.sender);
-        emit NewPaper(paper);
-        return paper;
+        allPapers[_ipfsHash] = Paper(_paper);
+        if (owner() != allPapers[_ipfsHash].owner())
+            allPapers[_ipfsHash].transferOwnership(owner());
+        allPapers[_ipfsHash].addPublisher(owner());
+        return allPapers[_ipfsHash];
     }
 
     function primaryPaperChecking(bool _checks, string memory _ipfsHash) public onlyOwner() {

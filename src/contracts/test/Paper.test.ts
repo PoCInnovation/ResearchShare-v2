@@ -5,7 +5,9 @@ import chai from 'chai';
 
 chai.use(ChaiBN(BN));
 
-const Journal = artifacts.require("Journal");
+const ipfsHash = "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"; // cid
+const fields = ["Reddit", "Screenshot"];
+const reviewTime = 3600; // in seconds
 const Paper = artifacts.require("Paper");
 
 const State = {
@@ -15,16 +17,22 @@ const State = {
   Rejected: 3,
 };
 
-contract("Paper", async (accounts) => {
-  const [owner, reviewer] = accounts; 
+const BigState = {
+  Pending: new BN(0),
+  RequestChanges: new BN(1),
+  Approved: new BN(2),
+  Rejected: new BN(3),
+};
 
+contract("Paper", async ([owner, reviewer]) => {
   it("addFeedback", async function () {
-    const paper = await Paper.deployed();
+    const paper = await Paper.new(ipfsHash, fields, owner, reviewTime);
     await paper.addReviewer(reviewer);
     await paper.addFeedback("The paper is correct.", {from: reviewer});
   
     // valid case
-    expect((await paper.feedbacks(0))[0]).to.be.equal("The paper is correct.");
+    const feedbacks = await paper.feedbacks(0);
+    expect(feedbacks[0]).to.be.equal("The paper is correct.");
 
     // invalid case
     await paper.removeReviewer(reviewer);
@@ -35,45 +43,41 @@ contract("Paper", async (accounts) => {
     );
   });
   it("validateFeedback", async function () {
-    const paper = await Paper.deployed();
+    const paper = await Paper.new(ipfsHash, fields, owner, reviewTime);
     await paper.addReviewer(reviewer);
     await paper.addFeedback("The paper is correct.", {from: reviewer});
 
-    // valid case
+    // valid case    
     await paper.validateFeedback(0);
-    expect((await paper.feedbacks(0))[2]).to.be.bignumber.equal(
-      new BN(State["Approved"])
-    );
-
-    // invalid case
+    const feedbacks = await paper.feedbacks(0);
+    expect(feedbacks[2]).to.be.bignumber.equal(BigState["Approved"]);
   });
   it("deleteFeedback", async function () {
-    const paper = await Paper.deployed();
+    const paper = await Paper.new(ipfsHash, fields, owner, reviewTime);
     await paper.addReviewer(reviewer);
     await paper.addFeedback("The paper is correct.", {from: reviewer});
 
     // valid case
     await paper.rejectFeedback(0);
-    expect((await paper.feedbacks(0))[2]).to.be.bignumber.equal(
-      new BN(State["Rejected"])
-    );
+    const feedbacks = await paper.feedbacks(0);
+    expect(feedbacks[2]).to.be.bignumber.equal(BigState["Rejected"]);
 
     // invalid case
   });
   it("addReviewState_validCase", async function () {
-    const paper = await Paper.deployed();
+    const paper = await Paper.new(ipfsHash, fields, owner, reviewTime);
     // valid case
 
-    expect(await paper.paperState()).to.be.bignumber.equal(new BN(State["Pending"]));
-    await paper.addReviewState(new BN(State["Approved"]), {from: reviewer});
+    let state = await paper.paperState();
+    expect(state).to.be.bignumber.equal(BigState["Pending"]);
+    await paper.addReviewState(BigState["Approved"], {from: reviewer});
     const reviewState = await paper.reviewStates(reviewer);
-    expect(reviewState).to.be.bignumber.equal(
-      new BN(State["Approved"])
-    );
-    expect(await paper.paperState()).to.be.bignumber.equal(new BN(State["Approved"]));
+    expect(reviewState).to.be.bignumber.equal(BigState["Approved"]);
+    state = await paper.paperState();
+    expect(state).to.be.bignumber.equal(BigState["Approved"]);
   });
   it("addReviewState_invalidCase", async function () {
-    const paper = await Paper.deployed();
+    const paper = await Paper.new(ipfsHash, fields, owner, reviewTime);
     await expectRevert(
       paper.addReviewState("The paper is just rubbish."),
       "You are not part of the reviewer's list. \
@@ -81,7 +85,7 @@ contract("Paper", async (accounts) => {
     );
   });
   it("claimAuthority", async function () {
-    const paper = await Paper.deployed();
+    const paper = await Paper.new(ipfsHash, fields, owner, reviewTime);
 
     // invalid case
     await expectRevert(
@@ -90,9 +94,11 @@ contract("Paper", async (accounts) => {
     );
 
     // valid case
-    expect(await paper.author()).to.be.equal(owner);
+    let author = await paper.author();
+    expect(author).to.be.equal(owner);
     await paper.addReviewer(reviewer);
     await paper.claimAuthority(reviewer);
-    expect(await paper.author()).to.be.equal(reviewer);
+    author = await paper.author();
+    expect(author).to.be.equal(reviewer);
   });
 });

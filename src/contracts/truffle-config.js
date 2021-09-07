@@ -23,11 +23,10 @@
 //
 // const fs = require('fs');
 // const mnemonic = fs.readFileSync(".secret").toString().trim();
-// eslint-disable-next-line @typescript-eslint/no-var-requires, no-undef
 require("ts-node").register({
   files: true,
 });
-// eslint-disable-next-line no-undef
+
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the

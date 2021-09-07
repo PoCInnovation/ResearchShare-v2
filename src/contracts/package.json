@@ -5,14 +5,14 @@
   "author": "Ersikan <julien.philippon@epitech.eu>",
   "license": "MIT",
   "scripts": {
-    "generate-types": "truffle compile && typechain --target=truffle-v5 'build/contracts/*.json'",
-    "postinstall": "truffle compile && yarn generate-types",
+    "generate-types": "truffle compile; typechain --target=truffle-v5 'build/contracts/*.json'",
+    "postinstall": "truffle compile; yarn generate-types",
     "ganache": "ganache-cli --deterministic",
     "migrate": "truffle migrate",
-    "test": "truffle compile && yarn generate-types && yarn migrate && truffle test",
+    "test": "truffle compile; yarn generate-types; yarn migrate; truffle test",
     "watch": "yarn test --watch",
     "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org",
-    "build": "truffle compile && typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json",
+    "build": "truffle compile; typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json",
     "console": "truffle console"
   },
   "dependencies": {

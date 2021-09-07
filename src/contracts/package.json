@@ -1,5 +1,5 @@
 {
-  "name": "ResearchShare-Contracts",
+  "name": "research-share-contracts",
   "version": "0.0.0",
   "main": "index.js",
   "author": "Ersikan <julien.philippon@epitech.eu>",
@@ -8,17 +8,19 @@
     "generate-types": "truffle compile && typechain --target=truffle-v5 'build/contracts/*.json'",
     "postinstall": "truffle compile && yarn generate-types",
     "ganache": "ganache-cli --deterministic",
-    "migrate": "tsc -p ./tsconfig.migrate.json --outDir ./migrations && truffle migrate",
-    "test": "truffle compile && yarn generate-types && yarn migrate && tsc -p ./tsconfig.test.json --outDir ./test && truffle test",
+    "migrate": "truffle migrate",
+    "test": "truffle compile && yarn generate-types && yarn migrate && truffle test",
     "watch": "yarn test --watch",
     "remix": "remixd -s $(pwd) --remix-ide https://remix.ethereum.org",
-    "build": "truffle compile && typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json"
+    "build": "truffle compile && typechain --target web3-v1 --out-dir ./build/typechain ./build/contracts/*.json",
+    "console": "truffle console"
   },
   "dependencies": {
     "@typechain/truffle-v5": "^5.1.0",
     "@typechain/web3-v1": "^3.1.0",
     "chai-bignumber": "^3.0.0",
     "chai-bn": "^0.3.0",
+    "ts-node": "^10.2.1",
     "typechain": "^5.1.2"
   },
   "devDependencies": {

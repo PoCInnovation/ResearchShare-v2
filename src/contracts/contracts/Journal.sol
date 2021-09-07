@@ -16,8 +16,8 @@ contract Journal is Ownable {
     /*
         This function should be called by the author of the paper.
     */
-    function addPaper(string memory _ipfsHash, uint _maxReviewTime) public returns (Paper) {
-        Paper paper = new Paper(_ipfsHash, new string[](0), msg.sender, _maxReviewTime);
+    function addPaper(string memory _ipfsHash, address _paper) public returns (Paper) {
+        Paper paper = Paper(_paper);
         allPapers[_ipfsHash] = paper;
         paper.addPublisher(msg.sender);
         emit NewPaper(paper);

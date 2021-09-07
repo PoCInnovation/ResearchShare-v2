@@ -3,5 +3,4 @@ build
 *.log
 contracts/artifacts
 types
-migrations/
-test/
+cache

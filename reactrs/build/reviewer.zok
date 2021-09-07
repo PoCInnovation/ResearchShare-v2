@@ -1,0 +1,9 @@
+import "hashes/sha256/sha256" as sha256
+
+def main(public u32[32][8] reviewers_hash, private u32[4][8] input_hashes) -> bool:
+    u32[8] reviewer_hash = sha256([[...input_hashes[0], ...input_hashes[1]], [...input_hashes[2], ...input_hashes[3]]])
+    bool ret = false
+    for u32 i in 0..32 do
+        ret = if reviewers_hash[i] == reviewer_hash then true else ret fi
+    endfor
+    return ret

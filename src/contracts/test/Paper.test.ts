@@ -1,10 +1,10 @@
 import { expectRevert } from '@openzeppelin/test-helpers';
+import chai from 'chai';
 import BN from 'bn.js';
 import ChaiBN from 'chai-bn';
-import chai from 'chai';
 import { PaperInstance } from '../types/truffle-contracts';
 
-chai.use(ChaiBN(BN));
+const expectBN = chai.use(ChaiBN(BN)).expect;
 
 const ipfsHash = "QmRAQB6YaCyidP37UdDnjFY5vQuiBrcqdyoW1CuDgwxkD4"; // cid
 const fields = ["Reddit", "Screenshot"];
@@ -25,7 +25,7 @@ const BigState = {
   Rejected: new BN(3),
 };
 
-contract("Paper", async ([owner, reviewer]) => {  
+contract("Paper", async ([owner, reviewer, random]) => {  
   beforeEach(async function () {
     this.paper = await Paper.new(ipfsHash, fields, owner, reviewTime, {from: owner});
     const paper = this.paper as PaperInstance;
@@ -56,7 +56,7 @@ contract("Paper", async ([owner, reviewer]) => {
     // valid case    
     await paper.validateFeedback(0, {from:owner});
     const feedbacks = await paper.feedbacks(0, {from:owner});
-    expect(feedbacks[2]).to.be.bignumber.equal(BigState["Approved"]);
+    expectBN(feedbacks[2]).to.be.a.bignumber.that.equals(BigState["Approved"]);
   });
   it("deleteFeedback", async function () {
     const paper = this.paper as PaperInstance;
@@ -66,42 +66,44 @@ contract("Paper", async ([owner, reviewer]) => {
     // valid case
     await paper.rejectFeedback(0, {from:owner});
     const feedbacks = await paper.feedbacks(0, {from:owner});
-    expect(feedbacks[2]).to.be.bignumber.equal(BigState["Rejected"]);
+    expectBN(feedbacks[2]).to.be.a.bignumber.that.equals(BigState["Rejected"]);
 
     // invalid case
   });
   it("addReviewState_validCase", async function () {
     const paper = this.paper as PaperInstance;
+    await paper.addReviewer(reviewer, {from:owner});
     // valid case
 
     let state = await paper.paperState({from:owner});
-    expect(state).to.be.bignumber.equal(BigState["Pending"]);
+    expectBN(state).to.be.a.bignumber.that.equals(BigState["Pending"]);
     await paper.addReviewState(BigState["Approved"], {from: reviewer});
     const reviewState = await paper.reviewStates(reviewer, {from:owner});
-    expect(reviewState).to.be.bignumber.equal(BigState["Approved"]);
+    expectBN(reviewState).to.be.a.bignumber.that.equals(BigState["Approved"]);
     state = await paper.paperState({from:owner});
-    expect(state).to.be.bignumber.equal(BigState["Approved"]);
+    expectBN(state).to.be.a.bignumber.that.equals(BigState["Approved"]);
   });
   it("addReviewState_invalidCase", async function () {
     const paper = this.paper as PaperInstance;
     await expectRevert(
-      paper.addReviewState("The paper is just rubbish.", {from:owner}),
-      "You are not part of the reviewer's list. \
-          Therefore, you can't perform this operation."
+      paper.addReviewState(BigState["Approved"], {from:owner}),
+      "You are not part of the reviewer's list. Therefore, you can't perform this operation."
     );
   });
   it("claimAuthority", async function () {
     const paper = this.paper as PaperInstance;
     // invalid case
     await expectRevert(
-      paper.claimAuthority("", {from:owner}),
+      paper.claimAuthority(random, {from:owner}),
       "This paper review is still ongoing."
     );
-
+    
     // valid case
     let author = await paper.author({from:owner});
     expect(author).to.be.equal(owner);
     await paper.addReviewer(reviewer, {from:owner});
+      
+    await paper.addReviewState(BigState["Approved"], {from:reviewer});
     await paper.claimAuthority(reviewer, {from:owner});
     author = await paper.author({from:owner});
     expect(author).to.be.equal(reviewer);

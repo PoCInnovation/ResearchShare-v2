@@ -71,18 +71,16 @@ contract Paper is OwnedPermissionManager {
     }
 
     function validateFeedback(uint _indexValidFeedback) public onlyOwner() isPendingState() {
-        if (_indexValidFeedback > 0 || _indexValidFeedback < feedbacks.length) {
-            feedbacks[_indexValidFeedback].feedbackState = State.Approved;
-        }
-        revert("No such feedback !");
+        if (_indexValidFeedback >= feedbacks.length)
+            revert("No such feedback !");
+        feedbacks[_indexValidFeedback].feedbackState = State.Approved;
     }
 
     function rejectFeedback(uint _indexRejectedFeedback) public onlyOwner() isPendingState() {
-        if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
-            emit FeedbackRejected(feedbacks[_indexRejectedFeedback].feedback);
-            feedbacks[_indexRejectedFeedback].feedbackState = State.Rejected;
-        }
-        revert("No such feedback !");
+        if (_indexRejectedFeedback >= feedbacks.length)
+            revert("No such feedback !");
+        emit FeedbackRejected(feedbacks[_indexRejectedFeedback].feedback);
+        feedbacks[_indexRejectedFeedback].feedbackState = State.Rejected;
     }
 
     function updatePaperState(State _state) private {

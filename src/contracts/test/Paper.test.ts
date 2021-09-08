@@ -45,8 +45,7 @@ contract("Paper", async ([owner, reviewer]) => {
     await paper.removeReviewer(reviewer, {from:owner});
     await expectRevert(
       paper.addFeedback("The paper is just rubbish.", {from: reviewer}),
-      "You are not part of the reviewer's list. \
-          Therefore, you can't perform this operation."
+      "You are not part of the reviewer's list. Therefore, you can't perform this operation."
     );
   });
   it("validateFeedback", async function () {

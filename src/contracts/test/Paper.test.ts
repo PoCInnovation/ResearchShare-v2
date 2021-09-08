@@ -25,16 +25,11 @@ const BigState = {
   Rejected: new BN(3),
 };
 
-console.info("?????????")
-
 contract("Paper", async ([owner, reviewer]) => {  
   beforeEach(async function () {
-    console.info("here");
-    console.info(owner);
-    this.paper = await Paper.deployed();
+    this.paper = await Paper.new(ipfsHash, fields, owner, reviewTime, {from: owner});
     const paper = this.paper as PaperInstance;
-    console.info(await paper.owner());
-    paper.primaryChecking({from:owner});
+    await paper.primaryChecking({from:owner});
   })
 
   it("addFeedback", async function () {

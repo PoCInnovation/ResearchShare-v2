@@ -7,7 +7,7 @@
   "scripts": {
     "generate-types": "truffle compile; typechain --target=truffle-v5 'build/contracts/*.json'",
     "postinstall": "truffle compile; yarn generate-types",
-    "develop": "truffle develop",
+    "develop": "truffle develop --network development",
     "migrate": "truffle migrate --reset",
     "test": "truffle test",
     "watch": "yarn test --watch",

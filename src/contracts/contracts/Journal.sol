@@ -20,7 +20,7 @@ contract Journal is Ownable {
         allPapers[_ipfsHash] = Paper(_paper);
         if (owner() != allPapers[_ipfsHash].owner())
             allPapers[_ipfsHash].transferOwnership(owner());
-        allPapers[_ipfsHash].addPublisher(owner());
+        //allPapers[_ipfsHash].addPublisher(owner());
         return allPapers[_ipfsHash];
     }
 

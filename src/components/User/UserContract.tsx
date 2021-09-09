@@ -27,12 +27,12 @@ export default function UserContract() {
                     />
                 </div>
 
-                { /*contract*/null ?
+                { /* contract ?
                     <UserInteract
-                        contract={/*contract*/null}
+                        contract=contract}
                         setSpinner={setSpinner}
                     />
-                : null }
+                : null */ }
             </div>
         </div>
     );

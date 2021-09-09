@@ -7,7 +7,7 @@ const reviewTime = 3600; // in seconds
 
 async function paper(deployer: Truffle.Deployer, _: string, [owner]: string[]) {
   await deployer.deploy(Paper, ipfsHash, fields, owner, reviewTime, {from: owner});
-};
+}
 
 async function journal(deployer: Truffle.Deployer, _: string, [owner]: string[]) {
   await deployer.deploy(Journal, {from: owner});

@@ -27,7 +27,7 @@ export default function ButtonUpload() {
             const direntry = await IPFS.files.stat("/reactrs-paper");
             setFileHash(direntry.cid);
         }
-    };
+    }
 
     return (
         <div>

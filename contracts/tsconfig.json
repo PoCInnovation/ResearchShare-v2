@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": [
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "typeRoots": [
+      "../node_modules/@types",
+      "./types"
+    ],
+    "types": [
+      "@types/node",
+      "@types/chai",
+      "@types/mocha"
+    ]
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": ["../node_modules", "build", "cache", "artifacts"]
+}

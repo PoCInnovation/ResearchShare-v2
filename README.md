@@ -53,12 +53,12 @@ It took place from September 2020 to March 2021, a first team focused on the fol
 
 ### Second Iteration
 
-- [] Define a proper way to select Reviewers for a paper & implement it.
+- [ ] Define a proper way to select Reviewers for a paper & implement it.
 - [x] Improve the submission process.
 - [x] Prove the reviewers and researcher anonymity during the review process.
 - [x] Improve users management.
-- [] Migrate the first iteration
-- [] Possibly, improve the front.
+- [ ] Migrate the first iteration
+- [ ] Possibly, improve the front.
 
 ## Contributors
 

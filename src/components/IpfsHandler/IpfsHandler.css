@@ -1,0 +1,13 @@
+.ipfs-handling {
+    border-width: '1px';
+    border-style: 'solid';
+    border-color: 'black';
+}
+
+.ipfs-margins {
+    margin: '5% 5% 5% 5%'
+}
+
+.ipfs-title {
+    margin-bottom: 25px;
+}

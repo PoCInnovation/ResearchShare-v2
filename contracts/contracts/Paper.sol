@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.5;
 
 import "./OwnedPermissionManager.sol";
@@ -12,13 +13,13 @@ contract Paper is OwnedPermissionManager {
         State feedbackState;
     }
 
-    address private author;
+    address public author;
     bool private primaryChecked;
     string private ipfsHash;
     string[] private fields;
-    State private paperState;
-    mapping (address => State) private reviewStates;
-    Feedback[] private feedbacks;
+    State public paperState;
+    mapping (address => State) public reviewStates;
+    Feedback[] public feedbacks;
     uint private totalApproved;
     uint private totalRejected;
     uint private submitDate;
@@ -32,6 +33,7 @@ contract Paper is OwnedPermissionManager {
         ipfsHash = _ipfsHash;
         fields = _fields;
         submitDate = block.timestamp;
+        paperState = State.Pending;
         deadlineDate = block.timestamp + _maxReviewTime;
     }
 
@@ -69,18 +71,16 @@ contract Paper is OwnedPermissionManager {
     }
 
     function validateFeedback(uint _indexValidFeedback) public onlyOwner() isPendingState() {
-        if (_indexValidFeedback > 0 || _indexValidFeedback < feedbacks.length) {
-            feedbacks[_indexValidFeedback].feedbackState = State.Approved;
-        }
-        revert("No such feedback !");
+        if (_indexValidFeedback >= feedbacks.length)
+            revert("No such feedback !");
+        feedbacks[_indexValidFeedback].feedbackState = State.Approved;
     }
 
     function rejectFeedback(uint _indexRejectedFeedback) public onlyOwner() isPendingState() {
-        if (_indexRejectedFeedback >= 0 || _indexRejectedFeedback < feedbacks.length) {
-            emit FeedbackRejected(feedbacks[_indexRejectedFeedback].feedback);
-            feedbacks[_indexRejectedFeedback].feedbackState = State.Rejected;
-        }
-        revert("No such feedback !");
+        if (_indexRejectedFeedback >= feedbacks.length)
+            revert("No such feedback !");
+        emit FeedbackRejected(feedbacks[_indexRejectedFeedback].feedback);
+        feedbacks[_indexRejectedFeedback].feedbackState = State.Rejected;
     }
 
     function updatePaperState(State _state) private {
